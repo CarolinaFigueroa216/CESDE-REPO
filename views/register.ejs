@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📝 Registro - NexaWeb2</title>
+  <link rel="stylesheet" href="/register.css" />
+  <!-- Google reCAPTCHA v2 -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+  <div class="register-container">
+    <h1 class="register-title">📝 Crear Cuenta</h1>
+    <div class="register-subtitle">Completa los campos para crear tu cuenta</div>
+
+    <% if (error) { %>
+      <p class="error"><%= error %></p>
+    <% } %>
+
+    <% if (success) { %>
+      <p class="success"><%= success %></p>
+    <% } %>
+
+    <form action="/register" method="POST">
+      <div class="input-group">
+        <label for="nombres_y_apellidos">Nombres y Apellidos</label>
+        <input type="text" id="nombres_y_apellidos" name="nombres_y_apellidos" placeholder="Nombres y Apellidos" required />
+      </div>
+
+      <div class="input-group">
+        <label for="identificacion">Número de Identificación</label>
+        <input type="text" id="identificacion" name="identificacion" placeholder="Número de Identificación" required />
+      </div>
+
+      <div class="input-group">
+        <label for="correo_electronico">Correo Electrónico (opcional)</label>
+        <input type="email" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico" />
+      </div>
+
+      <div class="input-group">
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña" required minlength="6" />
+      </div>
+
+      <div class="input-group">
+        <label for="confirmar_contrasena">Confirmar Contraseña</label>
+        <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" placeholder="Confirmar Contraseña" required />
+      </div>
+
+      <div class="input-group">
+        <label for="rol">Tipo de Usuario</label>
+        <select name="rol" id="rol" required>
+          <option value="normal">👤 Usuario Normal</option>
+          <option value="admin">🎯 Administrador</option>
+          <option value="superadmin">👑 Super Administrador</option>
+        </select>
+      </div>
+
+      <!-- reCAPTCHA v2 Widget -->
+      <div class="input-group captcha-container">
+        <div class="g-recaptcha" 
+             data-sitekey="<%= process.env.RECAPTCHA_SITE_KEY %>"
+             data-theme="light"
+             data-size="normal">
+        </div>
+      </div>
+
+      <button type="submit" class="register-btn">📝 Registrarse</button>
+    </form>
+
+    <p style="margin-top: 20px; text-align: center;">
+      ¿Ya tienes cuenta? <a href="/login">🔐 Iniciar Sesión</a>
+    </p>
+  </div>
+
+  <!-- Script de debug para reCAPTCHA -->
+  <script>
+    // Debug: verificar que reCAPTCHA se carga
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Página cargada');
+      console.log('Site Key:', '<%= process.env.RECAPTCHA_SITE_KEY %>');
+      
+      // Verificar si grecaptcha está disponible
+      setTimeout(function() {
+        if (typeof grecaptcha !== 'undefined') {
+          console.log('✅ reCAPTCHA cargado correctamente');
+        } else {
+          console.error('❌ reCAPTCHA no se cargó');
+        }
+      }, 2000);
+    });
+
+    // Debug: verificar el token antes de enviar
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const recaptchaResponse = grecaptcha.getResponse();
+      console.log('Token reCAPTCHA:', recaptchaResponse);
+      
+      if (!recaptchaResponse) {
+        e.preventDefault();
+        alert('Por favor, completa la verificación reCAPTCHA');
+        return false;
+      }
+    });
+  </script>
+</body>
+</html>

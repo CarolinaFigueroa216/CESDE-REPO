@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/login.css">
+    <!-- Google reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <div class="login-container">
+        <img src="/img/CESDE-LOGO.png" alt="Logo CESDE" class="login-logo">
+        <h1 class="login-title">Hola de nuevo</h1>
+        <div class="login-subtitle">Ingresa a tu cuenta llenando los campos solicitados</div>
+        
+        <% if (error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+        
+        <% if (success) { %>
+            <div class="success"><%= success %></div>
+        <% } %>
+        
+        <form method="POST" action="/login">
+            <input type="text" name="identificacion" placeholder="Nombre de usuario" required autocomplete="username">
+            <input type="password" name="contrasena" placeholder="Clave" required autocomplete="current-password">
+            <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+            
+            <!-- reCAPTCHA v2 Widget para login -->
+            <div class="captcha-container">
+                <div class="g-recaptcha" 
+                     data-sitekey="<%= process.env.RECAPTCHA_SITE_KEY %>"
+                     data-theme="light"
+                     data-size="normal">
+                </div>
+            </div>
+            
+            <button type="submit" class="login-btn">Ingresar</button>
+        </form>
+
+        <p class="register-link">
+          ¿No tienes cuenta? <a href="/register">Regístrate aquí</a>
+        </p>
+
+        <div class="cookies-msg">Las 'Cookies' deben estar habilitadas en su navegador</div>
+    </div>
+
+    <!-- Script de validación para reCAPTCHA -->
+    <script>
+        // Validar reCAPTCHA antes de enviar formulario
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const recaptchaResponse = grecaptcha.getResponse();
+            
+            if (!recaptchaResponse) {
+                e.preventDefault();
+                alert('Por favor, completa la verificación "No soy un robot"');
+                return false;
+            }
+            
+            console.log('✅ reCAPTCHA completado, enviando formulario...');
+        });
+
+        // Debug opcional (puedes quitarlo en producción)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Login página cargada');
+            
+            setTimeout(function() {
+                if (typeof grecaptcha !== 'undefined') {
+                    console.log('✅ reCAPTCHA cargado correctamente');
+                } else {
+                    console.error('❌ Error: reCAPTCHA no se cargó');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+.login-logo {
+  display: block;
+  margin: 0 auto 1.5rem auto;
+  max-width: 180px;
+  width: 60%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.08);
+  background: #fff;
+  padding: 0.5rem;
+}
+
+.login-title {
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #222;
+  margin-bottom: 0.5rem;
+  letter-spacing: -1px;
+}
+
+.login-subtitle {
+  color: #ec167f;
+  font-weight: 500;
+  font-size: 0.98rem;
+  margin-bottom: 1.2rem;
+  margin-top: -0.5rem;
+  text-align: center;
+}
+
+.login-container {
+  background: #fff;
+  max-width: 420px;
+  margin: 40px auto 0 auto;
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  margin: 10px 0;
+  padding: 1rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 1rem;
+  background: #fafafa;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border: 1.5px solid #ec167f;
+  outline: none;
+}
+
+.login-btn {
+  background: #ec167f;
+  color: #fff;
+  border: none;
+  padding: 0.9rem 0;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.login-btn:hover {
+  background: #b80b5e;
+}
+
+.forgot-password {
+  display: block;
+  margin: 0.5rem 0 0.7rem 0;
+  color: #222;
+  font-size: 0.98rem;
+  text-align: right;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cookies-msg {
+  color: #888;
+  font-size: 0.98rem;
+  margin-top: 1.7rem;
+  text-align: center;
+}
+/* Login - estilo inspirado en CESDE */
+
+body {
+  min-height: 100vh;
+  background: url('/img/Fondo-CESDE.jpg') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  color: #222222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.container {
+  background: transparent;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  padding: 0 2rem;
+}
+
+h1 {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #222222;
+  margin-bottom: 0.7rem;
+  letter-spacing: -1px;
+}
+
+.subtitle {
+  color: #ec167f;
+  font-weight: 600;
+  font-size: 1.13rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.1rem;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid #efefef;
+  border-radius: 7px;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  background: #fff;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #ec167f;
+  outline: none;
+}
+
+.forgot-link {
+  color: #ec167f;
+  font-size: 0.97rem;
+  text-decoration: underline;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 1.4rem;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: #a9115d;
+}
+
+button {
+  width: 100%;
+  padding: 1rem;
+  background: #ec167f;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(236,22,127,0.1);
+  transition: background 0.22s;
+}
+
+button:hover {
+  background: #d0006b;
+}
+
+.cookies-text {
+  font-size: 0.93rem;
+  color: #6d6d6d;
+  margin-top: 0.9rem;
+}
+
+/* Responsive para móviles */
+@media (max-width: 500px) {
+  .container {
+    padding: 0 8vw;
+  }
+  h1 {
+    font-size: 1.45rem;
+  }
+}
+
+.register-link {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.register-link a {
+  display: inline-block;
+  background: transparent;
+  border: 2px solid #ec167f;
+  color: #ec167f;
+  padding: 0.75rem 1.6rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 
+    background-color 0.3s ease, 
+    color 0.3s ease, 
+    box-shadow 0.3s ease;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.register-link a:hover,
+.register-link a:focus {
+  background: #ec167f;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(236, 22, 127, 0.3);
+  outline: none;
+}
+
+/* Estilos para reCAPTCHA en login */
+.captcha-container {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  width: 100%;
+}
+
+/* Ajustar el espaciado del enlace "¿Olvidaste tu contraseña?" */
+.forgot-password {
+  display: block;
+  margin: 0.5rem 0 0.5rem 0; /* Reducir margen inferior para el reCAPTCHA */
+  color: #222;
+  font-size: 0.98rem;
+  text-align: right;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Responsive para reCAPTCHA v2 en login */
+@media (max-width: 480px) {
+  .g-recaptcha {
+    transform: scale(0.85);
+    transform-origin: center;
+  }
+  
+  .captcha-container {
+    overflow: hidden; /* Evitar scroll horizontal */
+    margin: 12px 0; /* Menos margen en móviles */
+  }
+  
+  .login-container {
+    padding: 2rem 1.5rem; /* Ajustar padding si es necesario */
+  }
+}
+
+/* Ajustar tamaño del contenedor si es necesario para que quepa el reCAPTCHA */
+@media (max-height: 700px) {
+  .login-container {
+    margin: 20px auto;
+  }
+  
+  .captcha-container {
+    margin: 10px 0;
+  }
+}

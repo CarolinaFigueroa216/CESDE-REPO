@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Usuarios CESDE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    .institutional-card {
+      border-left: 4px solid #6f42c1;
+    }
+    .badge-aspirante { background-color: #6c757d; }
+    .badge-estudiante { background-color: #0d6efd; }
+    .badge-egresado { background-color: #198754; }
+    .badge-docente { background-color: #fd7e14; }
+    .badge-colaborador { background-color: #6610f2; }
+    .badge-administrativo { background-color: #d63384; }
+    .tab-content {
+      padding: 20px;
+      background: white;
+      border: 1px solid #dee2e6;
+      border-top: none;
+      border-radius: 0 0 5px 5px;
+    }
+    .nav-tabs .nav-link.active {
+      font-weight: bold;
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-4">
+    <h2 class="mb-4 text-center">Gestión Institucional de Usuarios</h2>
+   
+    <ul class="nav nav-tabs" id="institutionalTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="asignacion-tab" data-bs-toggle="tab" data-bs-target="#asignacion" type="button" role="tab">Asignación</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="sedes-tab" data-bs-toggle="tab" data-bs-target="#sedes" type="button" role="tab">Sedes</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="escuelas-tab" data-bs-toggle="tab" data-bs-target="#escuelas" type="button" role="tab">Escuelas</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="asignaturas-tab" data-bs-toggle="tab" data-bs-target="#asignaturas" type="button" role="tab">Asignaturas</button>
+      </li>
+    </ul>
+   
+    <div class="tab-content" id="institutionalTabContent">
+      <!-- Pestaña de Asignación -->
+      <div class="tab-pane fade show active" id="asignacion" role="tabpanel">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="card institutional-card">
+              <div class="card-header">
+                <h5>Asignaciones Institucionales</h5>
+              </div>
+              <div class="card-body">
+                <table class="table table-hover" id="asignacionesTable">
+                  <thead>
+                    <tr>
+                      <th>Usuario</th>
+                      <th>Rol</th>
+                      <th>Sede</th>
+                      <th>Escuela</th>
+                      <th>Asignatura</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="asignacionesBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+         
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header">
+                <h5 id="formAsignacionTitle">Nueva Asignación</h5>
+              </div>
+              <div class="card-body">
+                <form id="asignacionForm">
+                  <input type="hidden" id="asignacionId">
+                  <div class="mb-3">
+                    <label for="usuarioSelect" class="form-label">Usuario</label>
+                    <select class="form-select" id="usuarioSelect" required></select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="rolInstitucional" class="form-label">Rol Institucional</label>
+                    <select class="form-select" id="rolInstitucional" required>
+                      <option value="">Seleccionar...</option>
+                      <option value="aspirante">Aspirante</option>
+                      <option value="estudiante">Estudiante</option>
+                      <option value="egresado">Egresado</option>
+                      <option value="docente">Docente</option>
+                      <option value="colaborador">Colaborador</option>
+                      <option value="administrativo">Administrativo</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="sedeSelect" class="form-label">Sede</label>
+                    <select class="form-select" id="sedeSelect"></select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="escuelaSelect" class="form-label">Escuela/Programa</label>
+                    <select class="form-select" id="escuelaSelect"></select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="asignaturaSelect" class="form-label">Asignatura</label>
+                    <select class="form-select" id="asignaturaSelect"></select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="fechaIngreso" class="form-label">Fecha Ingreso</label>
+                    <input type="date" class="form-control" id="fechaIngreso">
+                  </div>
+                  <div class="mb-3">
+                    <label for="fechaEgreso" class="form-label">Fecha Egreso</label>
+                    <input type="date" class="form-control" id="fechaEgreso">
+                  </div>
+                  <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="activoCheck" checked>
+                    <label class="form-check-label" for="activoCheck">Activo</label>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100" id="submitAsignacion">Guardar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+      <!-- Pestañas de configuración -->
+      <div class="tab-pane fade" id="sedes" role="tabpanel">
+        <!-- Contenido similar para sedes -->
+      </div>
+     
+      <div class="tab-pane fade" id="escuelas" role="tabpanel">
+        <!-- Contenido similar para escuelas -->
+      </div>
+     
+      <div class="tab-pane fade" id="asignaturas" role="tabpanel">
+        <!-- Contenido similar para asignaturas -->
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="gestusuarios.js"></script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema de Gestión CESDE - Super Administrador</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css"/>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding-top: 20px;
+    }
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .user-card {
+      border-left: 4px solid #0d6efd;
+    }
+    .admin-card {
+      border-left: 4px solid #198754;
+    }
+    .superadmin-card {
+      border-left: 4px solid #dc3545;
+    }
+    .user-type-badge {
+      font-size: 0.8rem;
+    }
+    #userTable tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+    .loading-spinner {
+      display: none;
+    }
+    .form-mode-view {
+      background-color: #f8f9fa;
+      cursor: not-allowed;
+    }
+    #userInfo {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      max-width: 300px;
+    }
+    #errorContainer {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      z-index: 1000;
+      max-width: 300px;
+    }
+    .nav-tabs {
+      margin-bottom: 20px;
+      background-color: #fff;
+      padding: 10px 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .organigrama-container {
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      min-height: 500px;
+    }
+    .tab-content {
+      padding: 20px 0;
+    }
+    .permisos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    .permiso-card {
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 15px;
+      transition: all 0.3s;
+    }
+    .permiso-card:hover {
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .permiso-card.selected {
+      border-color: #0d6efd;
+      background-color: #f0f7ff;
+    }
+    .jstree-icon {
+      color: #6c757d;
+    }
+    .hierarchy-badge {
+      font-size: 0.7rem;
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="userInfo" class="alert alert-info" style="display: none;"></div>
+  <div id="errorContainer" class="alert alert-danger" style="display: none;">
+    <div id="errorDetails"></div>
+    <button class="btn btn-sm btn-outline-dark mt-2" onclick="copyErrorToClipboard()">
+      <i class="bi bi-clipboard"></i> Copiar
+    </button>
+  </div>
+ 
+  <div class="container">
+    <!-- Pestañas de navegación -->
+    <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-tab-pane" type="button">Gestión de Usuarios</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="org-tab" data-bs-toggle="tab" data-bs-target="#org-tab-pane" type="button">Organigrama</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="positions-tab" data-bs-toggle="tab" data-bs-target="#positions-tab-pane" type="button">Cargos</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions-tab-pane" type="button">Permisos</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs-tab-pane" type="button">Registros</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="mainTabsContent">
+      <!-- Pestaña de Gestión de Usuarios -->
+      <div class="tab-pane fade show active" id="users-tab-pane" role="tabpanel" aria-labelledby="users-tab">
+        <div class="row mb-4">
+          <div class="col-12 text-center">
+            <h1>Gestión de Usuarios CESDE</h1>
+            <p class="text-muted">Administración completa del sistema de usuarios</p>
+          </div>
+        </div>
+        <div class="row">
+          <!-- Tabla de usuarios -->
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Lista de Usuarios</h5>
+                <div>
+                  <button id="newUserBtn" class="btn btn-sm btn-success me-2">
+                    <i class="bi bi-plus-circle"></i> Nuevo Usuario
+                  </button>
+                  <button id="refreshBtn" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise"></i> Actualizar
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover" id="userTable">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Tipo</th>
+                        <th>Departamento</th>
+                        <th>Cargo</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="userTableBody"></tbody>
+                  </table>
+                </div>
+                <div class="d-flex justify-content-center">
+                  <div class="spinner-border loading-spinner text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formulario de Usuario -->
+          <div class="col-md-4">
+            <div class="card mb-4">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0" id="formTitle">Gestión de Usuario</h5>
+                <div>
+                  <button id="editBtn" class="btn btn-sm btn-outline-warning me-2" disabled>
+                    <i class="bi bi-pencil"></i> Editar
+                  </button>
+                  <button id="deleteBtn" class="btn btn-sm btn-outline-danger" disabled>
+                    <i class="bi bi-trash"></i> Eliminar
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <form id="userForm">
+                  <input type="hidden" id="userId">
+                  <div class="mb-3">
+                    <label for="identification" class="form-label">Identificación</label>
+                    <input type="number" class="form-control" id="identification" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="username" class="form-label">Nombre de Usuario</label>
+                    <input type="text" class="form-control" id="username" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="password" required />
+                    <small class="text-muted">Dejar en blanco para mantener la contraseña actual</small>
+                  </div>
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" required />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Tipo de Usuario</label>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="userType" id="normalUser" value="normal" checked />
+                      <label class="form-check-label" for="normalUser">Usuario Normal</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="userType" id="adminUser" value="admin" />
+                      <label class="form-check-label" for="adminUser">Administrador</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="userType" id="superadminUser" value="superadmin" />
+                      <label class="form-check-label" for="superadminUser">Super Administrador</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="departmentSelect" class="form-label">Departamento</label>
+                    <select class="form-select" id="departmentSelect" disabled>
+                      <option value="">Seleccionar departamento</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="positionSelect" class="form-label">Cargo</label>
+                    <select class="form-select" id="positionSelect" disabled>
+                      <option value="">Seleccionar cargo</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                    <span id="submitText">Registrar</span>
+                    <span class="spinner-border spinner-border-sm loading-spinner" role="status" aria-hidden="true"></span>
+                  </button>
+                  <button type="button" class="btn btn-secondary w-100 mt-2" id="cancelBtn" style="display: none;">
+                    Cancelar
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Inicio de Sesión</h5>
+              </div>
+              <div class="card-body">
+                <form id="loginForm">
+                  <div class="mb-3">
+                    <label for="loginEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="loginEmail" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="loginPassword" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="loginPassword" required />
+                  </div>
+                  <button type="submit" class="btn btn-success w-100">
+                    <span id="loginText">Iniciar Sesión</span>
+                    <span class="spinner-border spinner-border-sm loading-spinner" role="status" aria-hidden="true"></span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestaña de Organigrama -->
+      <div class="tab-pane fade" id="org-tab-pane" role="tabpanel" aria-labelledby="org-tab">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Departamentos</h5>
+                <button id="newDeptBtn" class="btn btn-sm btn-success">
+                  <i class="bi bi-plus-circle"></i> Nuevo
+                </button>
+              </div>
+              <div class="card-body">
+                <div id="departmentTree"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Detalles del Departamento</h5>
+              </div>
+              <div class="card-body">
+                <form id="departmentForm">
+                  <input type="hidden" id="departmentId">
+                  <div class="mb-3">
+                    <label for="departmentName" class="form-label">Nombre del Departamento</label>
+                    <input type="text" class="form-control" id="departmentName" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="departmentDescription" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="departmentDescription" rows="3"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for="parentDepartment" class="form-label">Departamento Padre</label>
+                    <select class="form-select" id="parentDepartment">
+                      <option value="">Ninguno (Departamento Raíz)</option>
+                    </select>
+                  </div>
+                  <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="departmentActive" checked>
+                    <label class="form-check-label" for="departmentActive">Activo</label>
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="saveDeptBtn">Guardar</button>
+                  <button type="button" class="btn btn-danger ms-2" id="deleteDeptBtn" disabled>Eliminar</button>
+                </form>
+              </div>
+            </div>
+            <div class="card mt-4">
+              <div class="card-header">
+                <h5 class="mb-0">Usuarios en este Departamento</h5>
+              </div>
+              <div class="card-body">
+                <table class="table" id="deptUsersTable">
+                  <thead>
+                    <tr>
+                      <th>Usuario</th>
+                      <th>Cargo</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="deptUsersBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestaña de Cargos -->
+      <div class="tab-pane fade" id="positions-tab-pane" role="tabpanel" aria-labelledby="positions-tab">
+        <div class="row">
+          <div class="col-md-5">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Lista de Cargos</h5>
+                <button id="newPositionBtn" class="btn btn-sm btn-success">
+                  <i class="bi bi-plus-circle"></i> Nuevo Cargo
+                </button>
+              </div>
+              <div class="card-body">
+                <table class="table table-hover" id="positionsTable">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Nivel</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="positionsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">Detalles del Cargo</h5>
+              </div>
+              <div class="card-body">
+                <form id="positionForm">
+                  <input type="hidden" id="positionId">
+                  <div class="mb-3">
+                    <label for="positionName" class="form-label">Nombre del Cargo</label>
+                    <input type="text" class="form-control" id="positionName" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="positionDescription" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="positionDescription" rows="3"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for="positionLevel" class="form-label">Nivel Jerárquico</label>
+                    <input type="number" class="form-control" id="positionLevel" min="1" value="1" required>
+                    <small class="text-muted">1 es el nivel más alto</small>
+                  </div>
+                  <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="positionActive" checked>
+                    <label class="form-check-label" for="positionActive">Activo</label>
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="savePositionBtn">Guardar</button>
+                  <button type="button" class="btn btn-danger ms-2" id="deletePositionBtn" disabled>Eliminar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestaña de Permisos -->
+      <div class="tab-pane fade" id="permissions-tab-pane" role="tabpanel" aria-labelledby="permissions-tab">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Gestión de Permisos</h5>
+                <div>
+                  <button id="newPermissionBtn" class="btn btn-sm btn-success me-2">
+                    <i class="bi bi-plus-circle"></i> Nuevo Permiso
+                  </button>
+                  <button id="refreshPermissionsBtn" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise"></i> Actualizar
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <ul class="nav nav-tabs" id="permissionsTabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="perms-list-tab" data-bs-toggle="tab" data-bs-target="#perms-list-tab-pane" type="button">Lista de Permisos</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="roles-perms-tab" data-bs-toggle="tab" data-bs-target="#roles-perms-tab-pane" type="button">Asignación a Roles</button>
+                  </li>
+                </ul>
+                <div class="tab-content mt-3" id="permissionsTabsContent">
+                  <div class="tab-pane fade show active" id="perms-list-tab-pane" role="tabpanel" aria-labelledby="perms-list-tab">
+                    <div class="table-responsive">
+                      <table class="table table-hover" id="permissionsTable">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody id="permissionsTableBody"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="tab-pane fade" id="roles-perms-tab-pane" role="tabpanel" aria-labelledby="roles-perms-tab">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="mb-3">
+                          <label for="roleTypeSelect" class="form-label">Seleccionar Rol</label>
+                          <select class="form-select" id="roleTypeSelect">
+                            <option value="normal">Usuario Normal</option>
+                            <option value="admin">Administrador</option>
+                            <option value="superadmin">Super Administrador</option>
+                          </select>
+                        </div>
+                        <div class="card">
+                          <div class="card-header">
+                            <h6 class="mb-0">Permisos asignados</h6>
+                          </div>
+                          <div class="card-body">
+                            <div id="assignedPermissionsList"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-8">
+                        <div class="card">
+                          <div class="card-header">
+                            <h6 class="mb-0">Todos los permisos disponibles</h6>
+                          </div>
+                          <div class="card-body">
+                            <div class="permisos-grid" id="allPermissionsGrid"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestaña de Registros -->
+      <div class="tab-pane fade" id="logs-tab-pane" role="tabpanel" aria-labelledby="logs-tab">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Registros del Sistema</h5>
+                <div>
+                  <button id="refreshLogsBtn" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-arrow-clockwise"></i> Actualizar
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="mb-3 row">
+                  <div class="col-md-3">
+                    <label for="logLevelFilter" class="form-label">Nivel</label>
+                    <select class="form-select" id="logLevelFilter">
+                      <option value="">Todos</option>
+                      <option value="info">Info</option>
+                      <option value="warning">Warning</option>
+                      <option value="error">Error</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="logSourceFilter" class="form-label">Origen</label>
+                    <select class="form-select" id="logSourceFilter">
+                      <option value="">Todos</option>
+                      <option value="login">Login</option>
+                      <option value="user_management">Gestión de Usuarios</option>
+                      <option value="org_management">Gestión de Organigrama</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label for="logDateFrom" class="form-label">Desde</label>
+                    <input type="date" class="form-control" id="logDateFrom">
+                  </div>
+                  <div class="col-md-3">
+                    <label for="logDateTo" class="form-label">Hasta</label>
+                    <input type="date" class="form-control" id="logDateTo">
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-hover" id="logsTable">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Nivel</th>
+                        <th>Origen</th>
+                        <th>Mensaje</th>
+                        <th>Usuario</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="logsTableBody"></tbody>
+                  </table>
+                </div>
+                <nav aria-label="Logs pagination">
+                  <ul class="pagination justify-content-center" id="logsPagination">
+                    <li class="page-item disabled">
+                      <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                      <a class="page-link" href="#">Siguiente</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modales -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Está seguro que desea eliminar este elemento? Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="assignUserModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Asignar Usuario a Departamento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="assignUserForm">
+            <input type="hidden" id="assignDeptId">
+            <div class="mb-3">
+              <label for="userToAssign" class="form-label">Usuario</label>
+              <select class="form-select" id="userToAssign" required>
+                <option value="">Seleccionar usuario</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="positionToAssign" class="form-label">Cargo</label>
+              <select class="form-select" id="positionToAssign" required>
+                <option value="">Seleccionar cargo</option>
+              </select>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="assignmentActive" checked>
+              <label class="form-check-label" for="assignmentActive">Activo</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="confirmAssignBtn">Asignar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="permissionModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="permissionModalTitle">Nuevo Permiso</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="permissionForm">
+            <input type="hidden" id="permissionId">
+            <div class="mb-3">
+              <label for="permissionName" class="form-label">Nombre del Permiso</label>
+              <input type="text" class="form-control" id="permissionName" required>
+            </div>
+            <div class="mb-3">
+              <label for="permissionCode" class="form-label">Código del Permiso</label>
+              <input type="text" class="form-control" id="permissionCode" required>
+              <small class="text-muted">Ejemplo: user.create, org.manage</small>
+            </div>
+            <div class="mb-3">
+              <label for="permissionDescription" class="form-label">Descripción</label>
+              <textarea class="form-control" id="permissionDescription" rows="3"></textarea>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="permissionActive" checked>
+              <label class="form-check-label" for="permissionActive">Activo</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="savePermissionBtn">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="logDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles del Registro</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <p><strong>Fecha:</strong> <span id="logDetailTimestamp"></span></p>
+              <p><strong>Nivel:</strong> <span id="logDetailLevel"></span></p>
+              <p><strong>Origen:</strong> <span id="logDetailSource"></span></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Usuario:</strong> <span id="logDetailUser"></span></p>
+              <p><strong>ID Usuario:</strong> <span id="logDetailUserId"></span></p>
+            </div>
+          </div>
+          <div class="mb-3">
+            <h6>Mensaje</h6>
+            <p id="logDetailMessage" class="p-2 bg-light rounded"></p>
+          </div>
+          <div class="mb-3">
+            <h6>Detalles</h6>
+            <pre id="logDetailDetails" class="p-2 bg-light rounded" style="max-height: 300px; overflow: auto;"></pre>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

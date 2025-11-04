@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metadata y Logs del Sistema</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding-top: 20px;
+    }
+
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-tabs {
+      margin-bottom: 20px;
+      background-color: #fff;
+      padding: 10px 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .log-entry {
+      border-left: 4px solid #6c757d;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #fff;
+      border-radius: 4px;
+    }
+
+    .log-error {
+      border-left-color: #dc3545;
+    }
+
+    .log-success {
+      border-left-color: #198754;
+    }
+
+    .log-warning {
+      border-left-color: #ffc107;
+    }
+
+    .log-info {
+      border-left-color: #0dcaf0;
+    }
+
+    .metadata-table {
+      width: 100%;
+    }
+
+    .metadata-table th {
+      width: 30%;
+      background-color: #f1f1f1;
+    }
+
+    pre {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+
+    .system-health {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .health-card {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .health-card .card-body {
+      font-size: 1.1rem;
+    }
+
+    .health-card .bi {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Pestañas de navegación -->
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">User Management</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="projects.html">Projects</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">System Metadata</a>
+      </li>
+    </ul>
+
+    <div class="row mb-4">
+      <div class="col-12 text-center">
+        <h1>System Metadata and Logs</h1>
+        <p class="text-muted">Application metadata and activity history</p>
+      </div>
+    </div>
+
+    <!-- Pestañas internas -->
+    <ul class="nav nav-tabs" id="metadataTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="metadata-tab" data-bs-toggle="tab" data-bs-target="#metadata" type="button"
+          role="tab" aria-controls="metadata" aria-selected="true">
+          <i class="bi bi-info-circle"></i> Metadata
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab"
+          aria-controls="logs" aria-selected="false">
+          <i class="bi bi-journal-text"></i> Activity Logs
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="health-tab" data-bs-toggle="tab" data-bs-target="#health" type="button" role="tab"
+          aria-controls="health" aria-selected="false">
+          <i class="bi bi-heart-pulse"></i> System Health
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab"
+          aria-controls="config" aria-selected="false">
+          <i class="bi bi-gear"></i> Configuration
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="metadataTabsContent">
+      <!-- Pestaña de Metadata -->
+      <div class="tab-pane fade show active" id="metadata" role="tabpanel" aria-labelledby="metadata-tab">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Application Metadata</h5>
+          </div>
+          <div class="card-body">
+            <table class="metadata-table table table-bordered">
+              <tbody id="appMetadata">
+                <tr>
+                  <th>Application Name</th>
+                  <td>CESDE Academic System</td>
+                </tr>
+                <tr>
+                  <th>Version</th>
+                  <td>1.0.0</td>
+                </tr>
+                <!-- ... otras filas ... -->
+                <tr>
+                  <th>Total Projects</th>
+                  <td>Loading...</td> <!-- Este se actualizará -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Database Schema</h5>
+          </div>
+          <div class="card-body">
+            <pre id="dbSchema"><code>Loading schema information...</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestaña de Logs -->
+      <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Activity Logs</h5>
+            <div>
+              <button id="refreshLogsBtn" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+              </button>
+              <button id="exportLogsBtn" class="btn btn-sm btn-outline-success ms-2">
+                <i class="bi bi-download"></i> Export
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="logFilter" class="form-label">Filter logs:</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="logFilter" placeholder="User ID (e.g. 49)">
+                <button class="btn btn-outline-primary" id="searchLogsBtn" type="button">
+                  <i class="bi bi-search"></i> Buscar
+                </button>
+              </div>
+            </div>
+            <div id="logEntries">
+              <!-- Logs se cargarán aquí -->
+              <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary loading-spinner" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestaña de System Health -->
+      <div class="tab-pane fade" id="health" role="tabpanel" aria-labelledby="health-tab">
+        <div class="system-health">
+          <div class="card health-card">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Database Status</h5>
+            </div>
+            <div class="card-body" id="dbStatus">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Checking database connection...
+            </div>
+          </div>
+
+          <div class="card health-card">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Storage Status</h5>
+            </div>
+            <div class="card-body" id="storageStatus">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Checking storage buckets...
+            </div>
+          </div>
+
+          <div class="card health-card">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">API Status</h5>
+            </div>
+            <div class="card-body" id="apiStatus">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              Checking API connectivity...
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt-4">
+          <div class="card-header">
+            <h5 class="mb-0">Usage Statistics</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h6>User Activity</h6>
+                <canvas id="userActivityChart" height="200"></canvas>
+              </div>
+              <div class="col-md-6">
+                <h6>Storage Usage</h6>
+                <canvas id="storageUsageChart" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pestaña de Configuración -->
+      <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">System Configuration</h5>
+          </div>
+          <div class="card-body">
+            <form id="configForm">
+              <div class="mb-3">
+                <label for="logRetention" class="form-label">Log Retention Period (days)</label>
+                <input type="number" class="form-control" id="logRetention" min="1" max="365" required>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Log Levels</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="logErrors" checked>
+                  <label class="form-check-label" for="logErrors">Errors</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="logWarnings" checked>
+                  <label class="form-check-label" for="logWarnings">Warnings</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="logInfo" checked>
+                  <label class="form-check-label" for="logInfo">Information</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="logDebug">
+                  <label class="form-check-label" for="logDebug">Debug</label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="maxFileSize" class="form-label">Maximum File Upload Size (MB)</label>
+                <input type="number" class="form-control" id="maxFileSize" min="1" max="100" required>
+              </div>
+
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Save Configuration
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="metadata.js"></script>
+</body>
+
+</html>

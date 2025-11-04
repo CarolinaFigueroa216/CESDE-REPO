@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bienvenido - NexaWeb2</title>
+  <link rel="stylesheet" href="/welcome.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>👋 ¡Hola, <%= user.nombres_y_apellidos %>!</h1>
+    <p>Tu rol es:
+      <% if(user.rol_usuario_normal) { %> 👤 Usuario Normal <% } %>
+      <% if(user.rol_usuario_administrador) { %> 🛠️ Administrador <% } %>
+      <% if(user.rol_usuario_superadministrador) { %> 🌟 SuperAdmin <% } %>
+    </p>
+    <a href="/logout" class="logout-btn">Cerrar sesión</a>
+  </div>
+</body>
+</html>
