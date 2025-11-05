@@ -1,0 +1,22 @@
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link <%= activeTab === 'users' ? 'active' : '' %>" href="/dashboard">
+      <i class="bi bi-people-fill me-1"></i> Gestión de Usuarios
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <%= activeTab === 'projects' ? 'active' : '' %>" href="/projects">
+      <i class="bi bi-folder-fill me-1"></i> Proyectos
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link <%= activeTab === 'metadata' ? 'active' : '' %>" href="/metadata">
+      <i class="bi bi-gear-fill me-1"></i> Metadatos
+    </a>
+  </li>
+  <li class="nav-item ms-auto">
+    <a class="nav-link text-danger" href="/logout">
+      <i class="bi bi-box-arrow-right me-1"></i> Cerrar Sesión
+    </a>
+  </li>
+</ul>

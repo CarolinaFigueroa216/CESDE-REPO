@@ -1,0 +1,65 @@
+/* ============================================
+   FOOTER.CSS - FOOTER GLOBAL
+   ============================================ */
+
+.page-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 12px;
+  z-index: 100;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-footer p {
+  margin: 3px 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+.page-footer strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.footer-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  font-style: italic;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 500px) {
+  .page-footer {
+    padding: 10px 15px;
+    font-size: 11px;
+  }
+
+  .page-footer p {
+    margin: 2px 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .page-footer {
+    padding: 8px 10px;
+    font-size: 10px;
+  }
+
+  .page-footer p {
+    margin: 1px 0;
+  }
+}

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel de Administración - CESDE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="/css/dashboard.css"/>
+  <link rel="stylesheet" href="/css/footer.css"/>
+</head>
+<body>
+  <!-- Navbar -->
+  <%- include('partials/navbar', { user: user, activeTab: 'dashboard' }) %>
+
+  <div class="container-fluid dashboard-container">
+    <!-- Header -->
+    <div class="dashboard-header mb-4">
+      <div class="row align-items-center">
+        <div class="col">
+          <h1 class="dashboard-title">
+            <i class="bi bi-people-fill me-2"></i>Panel de Administración
+          </h1>
+          <p class="dashboard-subtitle">Gestión de usuarios - CESDE</p>
+        </div>
+        <div class="col-auto">
+          <span class="badge bg-success">
+            <i class="bi bi-check-circle me-1"></i>En línea
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="row g-4">
+      <!-- Tabla de Usuarios (8 columnas) -->
+      <div class="col-lg-8">
+        <div class="card dashboard-card">
+          <div class="card-header dashboard-card-header">
+            <h5 class="mb-0">
+              <i class="bi bi-list me-2"></i>Lista de Usuarios
+            </h5>
+            <div class="btn-group" role="group">
+              <button id="newUserBtn" class="btn btn-sm btn-success">
+                <i class="bi bi-plus-circle me-1"></i> Nuevo
+              </button>
+              <button id="refreshBtn" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover dashboard-table mb-0">
+                <thead>
+                  <tr class="table-header-row">
+                    <th>ID</th>
+                    <th>Identificación</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="userTableBody">
+                  <tr>
+                    <td colspan="7" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario (4 columnas) -->
+      <div class="col-lg-4">
+        <div class="card dashboard-card">
+          <div class="card-header dashboard-card-header">
+            <h5 class="mb-0">
+              <i class="bi bi-pencil-square me-2"></i>Gestión de Usuario
+            </h5>
+          </div>
+
+          <div class="card-body">
+            <form id="userForm" class="user-form">
+              <input type="hidden" id="userId" />
+
+              <!-- Identificación -->
+              <div class="mb-3">
+                <label for="identificacion" class="form-label">
+                  <i class="bi bi-card-text me-1"></i>Identificación
+                </label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-cesde" 
+                  id="identificacion" 
+                  placeholder="Ej: 1234567890"
+                  required 
+                />
+              </div>
+
+              <!-- Nombre -->
+              <div class="mb-3">
+                <label for="nombres" class="form-label">
+                  <i class="bi bi-person me-1"></i>Nombre Completo
+                </label>
+                <input 
+                  type="text" 
+                  class="form-control form-control-cesde" 
+                  id="nombres" 
+                  placeholder="Ej: Juan Pérez"
+                  required 
+                />
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="correo" class="form-label">
+                  <i class="bi bi-envelope me-1"></i>Email
+                </label>
+                <input 
+                  type="email" 
+                  class="form-control form-control-cesde" 
+                  id="correo" 
+                  placeholder="Ej: usuario@cesde.edu.co"
+                  required 
+                />
+              </div>
+
+              <!-- Contraseña -->
+              <div class="mb-3">
+                <label for="contrasena" class="form-label">
+                  <i class="bi bi-key me-1"></i>Contraseña
+                </label>
+                <input 
+                  type="password" 
+                  class="form-control form-control-cesde" 
+                  id="contrasena" 
+                  placeholder="Dejar en blanco para mantener"
+                />
+                <small class="text-muted d-block mt-1">
+                  Solo completar si quieres cambiarla
+                </small>
+              </div>
+
+              <!-- Rol -->
+              <div class="mb-3">
+                <label class="form-label">
+                  <i class="bi bi-shield-check me-1"></i>Rol de Usuario
+                </label>
+                <div class="role-selector">
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="radio" 
+                      name="userRole" 
+                      id="roleNormal" 
+                      value="normal" 
+                      checked 
+                    />
+                    <label class="form-check-label" for="roleNormal">
+                      <span class="role-badge role-normal">Usuario Normal</span>
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="radio" 
+                      name="userRole" 
+                      id="roleAdmin" 
+                      value="admin" 
+                    />
+                    <label class="form-check-label" for="roleAdmin">
+                      <span class="role-badge role-admin">Administrador</span>
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input 
+                      class="form-check-input" 
+                      type="radio" 
+                      name="userRole" 
+                      id="roleSuperAdmin" 
+                      value="superadmin" 
+                    />
+                    <label class="form-check-label" for="roleSuperAdmin">
+                      <span class="role-badge role-superadmin">SuperAdmin</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Estado -->
+              <div class="mb-4">
+                <label class="form-label">
+                  <i class="bi bi-toggle-on me-1"></i>Estado
+                </label>
+                <div class="form-check form-switch">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    id="estado" 
+                    checked 
+                  />
+                  <label class="form-check-label" for="estado">
+                    <span id="estadoText">Activo</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Botones -->
+              <button type="submit" class="btn btn-primary btn-cesde w-100 mb-2" id="submitBtn">
+                <i class="bi bi-check-circle me-1"></i>
+                <span id="submitText">Guardar Usuario</span>
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-outline-secondary w-100 mb-2" 
+                id="cancelBtn" 
+                style="display: none;"
+              >
+                <i class="bi bi-x-circle me-1"></i>Cancelar
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-outline-danger w-100" 
+                id="deleteBtn" 
+                disabled
+              >
+                <i class="bi bi-trash me-1"></i>Eliminar
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row g-4 mt-2 mb-4">
+      <div class="col-md-3">
+        <div class="stat-card stat-card-primary">
+          <i class="bi bi-people"></i>
+          <div>
+            <h6>Total Usuarios</h6>
+            <p id="totalUsers">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card stat-card-success">
+          <i class="bi bi-check-circle"></i>
+          <div>
+            <h6>Activos</h6>
+            <p id="activeUsers">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card stat-card-warning">
+          <i class="bi bi-shield-check"></i>
+          <div>
+            <h6>Administradores</h6>
+            <p id="adminUsers">0</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card stat-card-info">
+          <i class="bi bi-star"></i>
+          <div>
+            <h6>SuperAdmin</h6>
+            <p id="superadminUsers">0</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de eliminación -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">
+            <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+          <p class="text-muted small">Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+            <i class="bi bi-trash me-1"></i>Sí, eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer', { user: user }) %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

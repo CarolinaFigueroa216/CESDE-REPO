@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registrar Licencia CC - CESDE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="/css/licencias.css"/>
+</head>
+<body>
+  <div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+      <h1>Registrar Obra con Licencia Creative Commons</h1>
+      <p class="lead text-muted">Protege tu obra con una licencia CC</p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress mb-4" style="height: 25px;">
+      <div id="progressBar" class="progress-bar bg-primary" role="progressbar" style="width: 33%;">
+        <span id="progressText">1/3</span>
+      </div>
+    </div>
+
+    <!-- PASO 1: Seleccionar Licencia -->
+    <div id="step1" class="license-step">
+      <h3 class="mb-4">Paso 1: Selecciona una Licencia</h3>
+      <div class="row g-3" id="licensesContainer">
+        <div class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 text-end">
+        <button id="nextStep1" class="btn btn-primary btn-lg">
+          Siguiente <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 2: Información de la Obra -->
+    <div id="step2" class="license-step" style="display: none;">
+      <h3 class="mb-4">Paso 2: Información de la Obra</h3>
+      <form id="obraForm" class="mb-4">
+        <div class="mb-3">
+          <label for="tituloObra" class="form-label">Título de la Obra <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="tituloObra" placeholder="Nombre de tu obra" required />
+        </div>
+
+        <div class="mb-3">
+          <label for="descripcionObra" class="form-label">Descripción</label>
+          <textarea class="form-control" id="descripcionObra" rows="3" placeholder="Describe tu obra..."></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="urlObra" class="form-label">URL de la Obra (opcional)</label>
+          <input type="url" class="form-control" id="urlObra" placeholder="https://..." />
+        </div>
+
+        <div class="mb-3">
+          <label for="archivoObra" class="form-label">Adjuntar Archivo (opcional)</label>
+          <input type="file" class="form-control" id="archivoObra" />
+          <small class="text-muted">Máximo 50MB</small>
+        </div>
+      </form>
+
+      <div class="mt-4 d-flex justify-content-between">
+        <button id="prevStep2" class="btn btn-secondary">
+          <i class="bi bi-arrow-left me-2"></i> Anterior
+        </button>
+        <button id="nextStep2" class="btn btn-primary btn-lg">
+          Siguiente <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 3: Confirmación -->
+    <div id="step3" class="license-step" style="display: none;">
+      <h3 class="mb-4">Paso 3: Confirmación</h3>
+      
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Licencia Seleccionada</h5>
+        </div>
+        <div class="card-body text-center">
+          <div id="licenseIconsConfirm" class="mb-3"></div>
+          <h5 id="confirmLicenseName"></h5>
+          <p id="confirmLicenseDesc" class="text-muted"></p>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5>Información de la Obra</h5>
+        </div>
+        <div class="card-body">
+          <p><strong>Título:</strong> <span id="confirmTitulo"></span></p>
+          <p><strong>Descripción:</strong> <span id="confirmDescripcion"></span></p>
+          <p><strong>Archivo:</strong> <span id="confirmArchivo"></span></p>
+        </div>
+      </div>
+
+      <div class="form-check mb-4">
+        <input class="form-check-input" type="checkbox" id="confirmTerms" />
+        <label class="form-check-label" for="confirmTerms">
+          Confirmo que soy el autor/titular de los derechos de esta obra y acepto registrarla con la licencia Creative Commons seleccionada.
+        </label>
+      </div>
+
+      <div class="mt-4 d-flex justify-content-between">
+        <button id="prevStep3" class="btn btn-secondary">
+          <i class="bi bi-arrow-left me-2"></i> Anterior
+        </button>
+        <button id="submitLicense" class="btn btn-success btn-lg">
+          <i class="bi bi-check-circle me-2"></i> Registrar Obra
+        </button>
+      </div>
+    </div>
+
+    <!-- Mis Registros -->
+    <div class="mt-5 pt-5 border-top">
+      <h3 class="mb-4">Mis Obras Registradas</h3>
+      <div id="misRegistros"></div>
+    </div>
+  </div>
+
+  <%- include('partials/footer', { user: user }) %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const SUPABASE_URL = '<%= process.env.SUPABASE_URL %>';
+    const SUPABASE_KEY = '<%= process.env.SUPABASE_KEY %>';
+  </script>
+  <script src="/js/licencias.js"></script>
+</body>
+</html>

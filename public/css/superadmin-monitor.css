@@ -1,0 +1,48 @@
+.card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.card-header {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  padding: 15px;
+}
+
+.card-header h5 {
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+#logEntries {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  padding: 12px;
+  border-left: 4px solid #dee2e6;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background: #f8f9fa;
+}
+
+canvas {
+  max-height: 300px;
+}
+
+pre {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-size: 12px;
+}

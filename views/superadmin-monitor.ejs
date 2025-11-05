@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor del Sistema - CESDE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <link rel="stylesheet" href="/css/superadmin-monitor.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+    <div class="container-fluid">
+      <span class="navbar-brand">
+        <i class="bi bi-star-fill me-2"></i>CESDE Admin Monitor
+      </span>
+      <span class="text-white">
+        <%= user.nombres_y_apellidos %>
+        <a href="/logout" class="btn btn-sm btn-outline-light ms-3">Logout</a>
+      </span>
+    </div>
+  </nav>
+
+  <div class="container-fluid py-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2>Monitor del Sistema</h2>
+        <p class="text-muted">Panel de control para administradores</p>
+      </div>
+    </div>
+
+    <!-- Estado del Sistema -->
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h6>Base de Datos</h6>
+            <div id="dbStatus">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h6>Almacenamiento</h6>
+            <div id="storageStatus">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h6>API</h6>
+            <div id="apiStatus">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h6>Última Actualización</h6>
+            <small id="lastUpdate">--:--:--</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row mb-4">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Actividad de Usuarios</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="userActivityChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">
+            <h5>Uso de Almacenamiento</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="storageUsageChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metadata del Sistema -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            <h5>Metadata del Sistema</h5>
+            <button class="btn btn-sm btn-outline-primary" onclick="location.reload()">
+              <i class="bi bi-arrow-clockwise"></i> Actualizar
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Parámetro</th>
+                    <th>Valor</th>
+                  </tr>
+                </thead>
+                <tbody id="appMetadata"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logs de Actividad -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Logs de Actividad</h5>
+            <div>
+              <input type="number" id="logFilter" placeholder="User ID" class="form-control form-control-sm d-inline" style="width: 150px;">
+              <button id="searchLogsBtn" class="btn btn-sm btn-primary ms-2">
+                <i class="bi bi-search"></i>
+              </button>
+              <button id="refreshLogsBtn" class="btn btn-sm btn-outline-primary ms-2">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <a href="/api/system/logs/export" class="btn btn-sm btn-success ms-2">
+                <i class="bi bi-download"></i> Exportar CSV
+              </a>
+            </div>
+          </div>
+          <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+            <div id="logEntries"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schema de BD -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5>Esquema de Base de Datos</h5>
+          </div>
+          <div class="card-body">
+            <div id="dbSchema" style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer', { user: user }) %>
+
+  <script>
+    const SUPABASE_URL = '<%= process.env.SUPABASE_URL %>';
+    const SUPABASE_KEY = '<%= process.env.SUPABASE_KEY %>';
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/superadmin-monitor.js"></script>
+</body>
+</html>

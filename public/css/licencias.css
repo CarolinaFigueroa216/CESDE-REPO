@@ -1,0 +1,29 @@
+.license-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid #e0e0e0;
+}
+
+.license-card:hover {
+  border-color: #ec167f;
+  box-shadow: 0 4px 12px rgba(236, 22, 127, 0.2);
+  transform: translateY(-4px);
+}
+
+.license-card.selected {
+  border-color: #ec167f;
+  background: rgba(236, 22, 127, 0.05);
+}
+
+.badge {
+  margin: 2px;
+}
+
+#progressBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  transition: width 0.3s ease;
+}

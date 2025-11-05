@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verificación 2FA - CESDE</title>
+  <link rel="stylesheet" href="/css/register.css"/>
+</head>
+<body>
+  <div class="register-container">
+    <h1 class="register-title">Verificación en dos pasos</h1>
+    <div class="register-subtitle">Ingresa el código enviado a tu correo</div>
+
+    <% if (error) { %>
+      <div class="alert error"><%= error %></div>
+    <% } %>
+    <% if (success) { %>
+      <div class="alert success"><%= success %></div>
+    <% } %>
+
+    <form method="POST" action="/2fa">
+      <div class="input-group">
+        <label for="otp">Código de verificación</label>
+        <input 
+          id="otp" 
+          name="otp" 
+          class="otp-input" 
+          placeholder="000000" 
+          inputmode="numeric" 
+          pattern="[0-9]{6}" 
+          maxlength="6" 
+          required 
+          autofocus
+        />
+      </div>
+
+      <button type="submit" class="register-btn">Verificar código</button>
+    </form>
+
+    <form method="POST" action="/2fa/resend" style="margin-top:12px;text-align:center">
+      <button type="submit" class="register-btn btn-secondary">Reenviar código</button>
+    </form>
+
+    <p class="otp-hint">El código expira en 10 minutos por seguridad.</p>
+    <p class="danger-link">¿No llega el correo? Revisa spam o intenta <a href="/logout">iniciar de nuevo</a>.</p>
+  </div>
+
+  <style>
+    .otp-input {
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-align: center;
+      font-size: 24px;
+    }
+    .otp-hint {
+      margin-top: 12px;
+      font-size: 0.92rem;
+      color: #666;
+      text-align: center;
+    }
+    .danger-link {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 0.95rem;
+      color: #444;
+    }
+    .danger-link a {
+      color: #ec167f;
+      text-decoration: none;
+    }
+    .btn-secondary {
+      background: #6c757d;
+    }
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+  </style>
+</body>
+</html>

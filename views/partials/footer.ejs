@@ -1,0 +1,13 @@
+<!-- FOOTER COMPONENT -->
+<footer class="page-footer">
+  <div class="footer-content">
+    <p>&copy; <%= new Date().getFullYear() %> <strong>CESDE</strong> - Sistema Académico</p>
+    <p class="footer-subtitle">
+      <% if (user) { %>
+        Sesión: <%= user.nombres_y_apellidos %>
+      <% } else { %>
+        Plataforma de Educación Digital
+      <% } %>
+    </p>
+  </div>
+</footer>

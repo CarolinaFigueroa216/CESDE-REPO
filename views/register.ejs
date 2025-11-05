@@ -2,105 +2,76 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>📝 Registro - NexaWeb2</title>
-  <link rel="stylesheet" href="/register.css" />
-  <!-- Google reCAPTCHA v2 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro - CESDE</title>
+  <link rel="stylesheet" href="/css/register.css"/>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
   <div class="register-container">
-    <h1 class="register-title">📝 Crear Cuenta</h1>
-    <div class="register-subtitle">Completa los campos para crear tu cuenta</div>
+    <div class="register-logo">
+      <img src="/img/CESDE-LOGO.png" alt="CESDE Logo" />
+    </div>
+
+    <h1 class="register-title">Crear Cuenta</h1>
+    <div class="register-subtitle">Completa tus datos para registrarte</div>
 
     <% if (error) { %>
-      <p class="error"><%= error %></p>
+      <div class="alert error"><%= error %></div>
     <% } %>
-
     <% if (success) { %>
-      <p class="success"><%= success %></p>
+      <div class="alert success"><%= success %></div>
     <% } %>
 
-    <form action="/register" method="POST">
+    <form method="POST" action="/register" class="register-form">
       <div class="input-group">
-        <label for="nombres_y_apellidos">Nombres y Apellidos</label>
-        <input type="text" id="nombres_y_apellidos" name="nombres_y_apellidos" placeholder="Nombres y Apellidos" required />
+        <label for="nombres_y_apellidos">Nombre Completo <span class="required">*</span></label>
+        <input type="text" id="nombres_y_apellidos" name="nombres_y_apellidos" placeholder="Nombre y apellidos" required />
       </div>
 
       <div class="input-group">
-        <label for="identificacion">Número de Identificación</label>
-        <input type="text" id="identificacion" name="identificacion" placeholder="Número de Identificación" required />
+        <label for="identificacion">Identificación <span class="required">*</span></label>
+        <input type="text" id="identificacion" name="identificacion" placeholder="Número de documento" required />
       </div>
 
       <div class="input-group">
-        <label for="correo_electronico">Correo Electrónico (opcional)</label>
-        <input type="email" id="correo_electronico" name="correo_electronico" placeholder="Correo Electrónico" />
+        <label for="correo_electronico">Correo Electrónico <span class="required">*</span></label>
+        <input type="email" id="correo_electronico" name="correo_electronico" placeholder="correo@ejemplo.com" required />
       </div>
 
       <div class="input-group">
-        <label for="contrasena">Contraseña</label>
-        <input type="password" id="contrasena" name="contrasena" placeholder="Contraseña" required minlength="6" />
+        <label for="contrasena">Contraseña <span class="required">*</span></label>
+        <input type="password" id="contrasena" name="contrasena" placeholder="Mínimo 6 caracteres" minlength="6" required />
       </div>
 
       <div class="input-group">
-        <label for="confirmar_contrasena">Confirmar Contraseña</label>
-        <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" placeholder="Confirmar Contraseña" required />
+        <label for="confirmar_contrasena">Confirmar Contraseña <span class="required">*</span></label>
+        <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" placeholder="Repite la contraseña" required />
       </div>
 
       <div class="input-group">
-        <label for="rol">Tipo de Usuario</label>
-        <select name="rol" id="rol" required>
-          <option value="normal">👤 Usuario Normal</option>
-          <option value="admin">🎯 Administrador</option>
-          <option value="superadmin">👑 Super Administrador</option>
+        <label for="rol">Rol de Usuario</label>
+        <select id="rol" name="rol" class="select-input">
+          <option value="normal" selected>Usuario Normal</option>
+          <option value="admin">Administrador</option>
+          <option value="superadmin">Super Administrador</option>
         </select>
       </div>
 
-      <!-- reCAPTCHA v2 Widget -->
-      <div class="input-group captcha-container">
-        <div class="g-recaptcha" 
-             data-sitekey="<%= process.env.RECAPTCHA_SITE_KEY %>"
-             data-theme="light"
-             data-size="normal">
-        </div>
+      <div class="recaptcha-container">
+        <div class="g-recaptcha" data-sitekey="<%= process.env.RECAPTCHA_SITE_KEY %>"></div>
       </div>
 
-      <button type="submit" class="register-btn">📝 Registrarse</button>
+      <button type="submit" class="register-btn">Registrarse</button>
     </form>
 
-    <p style="margin-top: 20px; text-align: center;">
-      ¿Ya tienes cuenta? <a href="/login">🔐 Iniciar Sesión</a>
-    </p>
+    <div class="register-footer">
+      <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a></p>
+    </div>
   </div>
 
-  <!-- Script de debug para reCAPTCHA -->
-  <script>
-    // Debug: verificar que reCAPTCHA se carga
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('Página cargada');
-      console.log('Site Key:', '<%= process.env.RECAPTCHA_SITE_KEY %>');
-      
-      // Verificar si grecaptcha está disponible
-      setTimeout(function() {
-        if (typeof grecaptcha !== 'undefined') {
-          console.log('✅ reCAPTCHA cargado correctamente');
-        } else {
-          console.error('❌ reCAPTCHA no se cargó');
-        }
-      }, 2000);
-    });
-
-    // Debug: verificar el token antes de enviar
-    document.querySelector('form').addEventListener('submit', function(e) {
-      const recaptchaResponse = grecaptcha.getResponse();
-      console.log('Token reCAPTCHA:', recaptchaResponse);
-      
-      if (!recaptchaResponse) {
-        e.preventDefault();
-        alert('Por favor, completa la verificación reCAPTCHA');
-        return false;
-      }
-    });
-  </script>
+  <div class="page-footer">
+    <p>&copy; <%= new Date().getFullYear() %> CESDE. Todos los derechos reservados.</p>
+  </div>
 </body>
 </html>

@@ -2,18 +2,97 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Bienvenido - NexaWeb2</title>
-  <link rel="stylesheet" href="/welcome.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bienvenido - CESDE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="/css/welcome.css"/>
 </head>
 <body>
-  <div class="container">
-    <h1>👋 ¡Hola, <%= user.nombres_y_apellidos %>!</h1>
-    <p>Tu rol es:
-      <% if(user.rol_usuario_normal) { %> 👤 Usuario Normal <% } %>
-      <% if(user.rol_usuario_administrador) { %> 🛠️ Administrador <% } %>
-      <% if(user.rol_usuario_superadministrador) { %> 🌟 SuperAdmin <% } %>
-    </p>
-    <a href="/logout" class="logout-btn">Cerrar sesión</a>
+  <div class="container py-5">
+    <!-- Header con bienvenida -->
+    <div class="welcome-header text-center mb-5">
+      <div class="welcome-icon mb-3">
+        <i class="bi bi-person-check-fill"></i>
+      </div>
+      <h1 class="display-4 fw-bold">¡Bienvenido, <%= user.nombres_y_apellidos %>!</h1>
+      <p class="lead text-muted">Has iniciado sesión correctamente</p>
+    </div>
+
+    <!-- Cards de información -->
+    <div class="row g-4">
+      <!-- Card de perfil -->
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-person-circle me-2 text-primary"></i>
+              Tu Información
+            </h5>
+            <hr>
+            <p class="mb-2"><strong>Nombre:</strong> <%= user.nombres_y_apellidos %></p>
+            <p class="mb-2"><strong>Identificación:</strong> <%= user.identificacion %></p>
+            <p class="mb-2"><strong>Correo:</strong> <%= user.correo_electronico || 'No registrado' %></p>
+            <p class="mb-2">
+              <strong>Rol:</strong>
+              <% if (user.rol_usuario_superadministrador) { %>
+                <span class="badge bg-danger">Super Administrador</span>
+              <% } else if (user.rol_usuario_administrador) { %>
+                <span class="badge bg-success">Administrador</span>
+              <% } else { %>
+                <span class="badge bg-primary">Usuario Normal</span>
+              <% } %>
+            </p>
+            <p class="mb-0">
+              <strong>Estado:</strong>
+              <span class="badge <%= user.estado ? 'bg-success' : 'bg-secondary' %>">
+                <%= user.estado ? 'Activo' : 'Inactivo' %>
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card de acciones rápidas -->
+      <div class="col-md-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">
+              <i class="bi bi-lightning-charge-fill me-2 text-warning"></i>
+              Acciones Rápidas
+            </h5>
+            <hr>
+            <div class="d-grid gap-2">
+              <% if (user.rol_usuario_administrador || user.rol_usuario_superadministrador) { %>
+              <a href="/dashboard" class="btn btn-primary">
+                <i class="bi bi-speedometer2 me-2"></i>Panel de Administración
+              </a>
+              <% } %>
+              <a href="/logout" class="btn btn-outline-danger">
+                <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+          <div>
+            <strong>Recordatorio de seguridad:</strong> Nunca compartas tu contraseña con nadie. 
+            Si detectas actividad sospechosa, contacta al administrador de inmediato.
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <%- include('partials/footer', { user: user }) %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
