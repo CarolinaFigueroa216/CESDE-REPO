@@ -5,73 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Registro - CESDE</title>
   <link rel="stylesheet" href="/css/register.css"/>
+  <link rel="stylesheet" href="/css/footer.css"/>
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
-  <div class="register-container">
-    <div class="register-logo">
-      <img src="/img/CESDE-LOGO.png" alt="CESDE Logo" />
+  <div class="register-wrapper">
+    <!-- LADO IZQUIERDO - LOGO -->
+    <div class="register-side-left">
+      <div class="register-logo">
+        <img src="/img/CESDE-LOGO.png" alt="CESDE Logo" />
+      </div>
+      <div class="register-brand">
+        <p>Plataforma Académica</p>
+      </div>
     </div>
 
-    <h1 class="register-title">Crear Cuenta</h1>
-    <div class="register-subtitle">Completa tus datos para registrarte</div>
+    <!-- LADO DERECHO - FORMULARIO -->
+    <div class="register-side-right">
+      <h1 class="register-title">Crear Cuenta</h1>
+      <p class="register-subtitle">Completa tus datos para registrarte</p>
 
-    <% if (error) { %>
-      <div class="alert error"><%= error %></div>
-    <% } %>
-    <% if (success) { %>
-      <div class="alert success"><%= success %></div>
-    <% } %>
+      <% if (error) { %>
+        <div class="alert error"><%= error %></div>
+      <% } %>
+      <% if (success) { %>
+        <div class="alert success"><%= success %></div>
+      <% } %>
 
-    <form method="POST" action="/register" class="register-form">
-      <div class="input-group">
-        <label for="nombres_y_apellidos">Nombre Completo <span class="required">*</span></label>
-        <input type="text" id="nombres_y_apellidos" name="nombres_y_apellidos" placeholder="Nombre y apellidos" required />
+      <form method="POST" action="/register" class="register-form">
+        <div class="form-row">
+          <div class="input-group">
+            <label for="nombres_y_apellidos">Nombre Completo <span class="required">*</span></label>
+            <input type="text" id="nombres_y_apellidos" name="nombres_y_apellidos" placeholder="Nombre y apellidos" required />
+          </div>
+
+          <div class="input-group">
+            <label for="identificacion">Identificación <span class="required">*</span></label>
+            <input type="text" id="identificacion" name="identificacion" placeholder="Número de documento" required />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="correo_electronico">Correo Electrónico <span class="required">*</span></label>
+          <input type="email" id="correo_electronico" name="correo_electronico" placeholder="correo@ejemplo.com" required />
+        </div>
+
+        <div class="form-row">
+          <div class="input-group">
+            <label for="contrasena">Contraseña <span class="required">*</span></label>
+            <input type="password" id="contrasena" name="contrasena" placeholder="Mínimo 6 caracteres" minlength="6" required />
+          </div>
+
+          <div class="input-group">
+            <label for="confirmar_contrasena">Confirmar Contraseña <span class="required">*</span></label>
+            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" placeholder="Repite la contraseña" required />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="rol">Rol de Usuario</label>
+          <select id="rol" name="rol">
+            <option value="normal" selected>Usuario Normal</option>
+            <option value="admin">Administrador</option>
+            <option value="superadmin">Super Administrador</option>
+          </select>
+        </div>
+
+        <div class="recaptcha-container">
+          <div class="g-recaptcha" data-sitekey="<%= process.env.RECAPTCHA_SITE_KEY %>"></div>
+        </div>
+
+        <button type="submit" class="register-btn">Registrarse</button>
+      </form>
+
+      <div class="register-footer">
+        <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a></p>
       </div>
-
-      <div class="input-group">
-        <label for="identificacion">Identificación <span class="required">*</span></label>
-        <input type="text" id="identificacion" name="identificacion" placeholder="Número de documento" required />
-      </div>
-
-      <div class="input-group">
-        <label for="correo_electronico">Correo Electrónico <span class="required">*</span></label>
-        <input type="email" id="correo_electronico" name="correo_electronico" placeholder="correo@ejemplo.com" required />
-      </div>
-
-      <div class="input-group">
-        <label for="contrasena">Contraseña <span class="required">*</span></label>
-        <input type="password" id="contrasena" name="contrasena" placeholder="Mínimo 6 caracteres" minlength="6" required />
-      </div>
-
-      <div class="input-group">
-        <label for="confirmar_contrasena">Confirmar Contraseña <span class="required">*</span></label>
-        <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" placeholder="Repite la contraseña" required />
-      </div>
-
-      <div class="input-group">
-        <label for="rol">Rol de Usuario</label>
-        <select id="rol" name="rol" class="select-input">
-          <option value="normal" selected>Usuario Normal</option>
-          <option value="admin">Administrador</option>
-          <option value="superadmin">Super Administrador</option>
-        </select>
-      </div>
-
-      <div class="recaptcha-container">
-        <div class="g-recaptcha" data-sitekey="<%= process.env.RECAPTCHA_SITE_KEY %>"></div>
-      </div>
-
-      <button type="submit" class="register-btn">Registrarse</button>
-    </form>
-
-    <div class="register-footer">
-      <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a></p>
     </div>
   </div>
 
-  <div class="page-footer">
-    <p>&copy; <%= new Date().getFullYear() %> CESDE. Todos los derechos reservados.</p>
-  </div>
+  <%- include('partials/footer', { user: null }) %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

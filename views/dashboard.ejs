@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="/css/footer.css"/>
 </head>
 <body>
-  <!-- Navbar -->
   <%- include('partials/navbar', { user: user, activeTab: 'dashboard' }) %>
 
   <div class="container-fluid dashboard-container">
@@ -92,7 +91,6 @@
             <form id="userForm" class="user-form">
               <input type="hidden" id="userId" />
 
-              <!-- Identificación -->
               <div class="mb-3">
                 <label for="identificacion" class="form-label">
                   <i class="bi bi-card-text me-1"></i>Identificación
@@ -106,7 +104,6 @@
                 />
               </div>
 
-              <!-- Nombre -->
               <div class="mb-3">
                 <label for="nombres" class="form-label">
                   <i class="bi bi-person me-1"></i>Nombre Completo
@@ -120,7 +117,6 @@
                 />
               </div>
 
-              <!-- Email -->
               <div class="mb-3">
                 <label for="correo" class="form-label">
                   <i class="bi bi-envelope me-1"></i>Email
@@ -134,7 +130,6 @@
                 />
               </div>
 
-              <!-- Contraseña -->
               <div class="mb-3">
                 <label for="contrasena" class="form-label">
                   <i class="bi bi-key me-1"></i>Contraseña
@@ -150,7 +145,6 @@
                 </small>
               </div>
 
-              <!-- Rol -->
               <div class="mb-3">
                 <label class="form-label">
                   <i class="bi bi-shield-check me-1"></i>Rol de Usuario
@@ -166,7 +160,7 @@
                       checked 
                     />
                     <label class="form-check-label" for="roleNormal">
-                      <span class="role-badge role-normal">Usuario Normal</span>
+                      Usuario Normal
                     </label>
                   </div>
                   <div class="form-check">
@@ -178,7 +172,7 @@
                       value="admin" 
                     />
                     <label class="form-check-label" for="roleAdmin">
-                      <span class="role-badge role-admin">Administrador</span>
+                      Administrador
                     </label>
                   </div>
                   <div class="form-check">
@@ -190,13 +184,12 @@
                       value="superadmin" 
                     />
                     <label class="form-check-label" for="roleSuperAdmin">
-                      <span class="role-badge role-superadmin">SuperAdmin</span>
+                      SuperAdmin
                     </label>
                   </div>
                 </div>
               </div>
 
-              <!-- Estado -->
               <div class="mb-4">
                 <label class="form-label">
                   <i class="bi bi-toggle-on me-1"></i>Estado
@@ -214,8 +207,7 @@
                 </div>
               </div>
 
-              <!-- Botones -->
-              <button type="submit" class="btn btn-primary btn-cesde w-100 mb-2" id="submitBtn">
+              <button type="submit" class="btn btn-primary btn-cesde w-100 mb-2" id="submitBtn" style="display: none;">
                 <i class="bi bi-check-circle me-1"></i>
                 <span id="submitText">Guardar Usuario</span>
               </button>

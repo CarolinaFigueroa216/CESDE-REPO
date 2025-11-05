@@ -1,214 +1,369 @@
-// Variables globales
-let currentUserId = null;
-let isEditMode = false;
+/* ============================================
+   DASHBOARD.JS - GESTIÓN DE USUARIOS
+   ============================================ */
 
-// Elementos del DOM
-const userTableBody = document.getElementById('userTableBody');
-const userForm = document.getElementById('userForm');
-const submitBtn = document.getElementById('submitBtn');
-const cancelBtn = document.getElementById('cancelBtn');
-const editBtn = document.getElementById('editBtn');
-const deleteBtn = document.getElementById('deleteBtn');
-const newUserBtn = document.getElementById('newUserBtn');
-const refreshBtn = document.getElementById('refreshBtn');
+let usuarioSeleccionado = null;
+let deleteModal = null;
 
-// Cargar usuarios al iniciar
+// Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-  loadUsers();
+  console.log('✅ Dashboard inicializado');
+  
+  // Inicializar modal
+  deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+  
+  // Cargar usuarios
+  cargarUsuarios();
+  
+  // Event listeners
+  const newUserBtn = document.getElementById('newUserBtn');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const userForm = document.getElementById('userForm');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  
+  if (newUserBtn) newUserBtn.addEventListener('click', nuevoUsuario);
+  if (refreshBtn) refreshBtn.addEventListener('click', cargarUsuarios);
+  if (userForm) userForm.addEventListener('submit', guardarUsuario);
+  if (cancelBtn) cancelBtn.addEventListener('click', cancelarEdicion);
+  if (deleteBtn) deleteBtn.addEventListener('click', abrirConfirmDelete);
+  if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', confirmarDelete);
 });
 
-// Cargar usuarios desde el backend
-async function loadUsers() {
-  showLoading(true);
+/* ============================================
+   CARGAR USUARIOS
+   ============================================ */
+
+async function cargarUsuarios() {
+  console.log('📌 Cargando usuarios...');
   try {
     const response = await fetch('/api/usuarios');
-    if (!response.ok) throw new Error('Error al cargar usuarios');
+    console.log('Response status:', response.status);
     
-    const users = await response.json();
-    renderUsers(users);
+    if (!response.ok) {
+      throw new Error('Error HTTP: ' + response.status);
+    }
+    
+    // ✅ CAMBIO AQUÍ - La API devuelve directamente un array
+    const usuarios = await response.json();
+    console.log('Datos recibidos:', usuarios);
+    
+    // Verificar si es array o objeto con success
+    let usuariosList = Array.isArray(usuarios) ? usuarios : usuarios.usuarios;
+    
+    if (usuariosList && usuariosList.length > 0) {
+      mostrarUsuarios(usuariosList);
+      actualizarEstadisticas(usuariosList);
+    } else {
+      mostrarErrorEnTabla('No hay usuarios');
+    }
+    
   } catch (error) {
-    showError('No se pudieron cargar los usuarios');
-    console.error(error);
-  } finally {
-    showLoading(false);
+    console.error('❌ Error:', error);
+    mostrarErrorEnTabla('Error de conexión: ' + error.message);
   }
 }
 
-// Renderizar tabla de usuarios
-function renderUsers(users) {
-  userTableBody.innerHTML = '';
-  users.forEach(user => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${user.id_usuarios}</td>
-      <td>${user.nombres_y_apellidos}</td>
-      <td>${user.correo_electronico || 'N/A'}</td>
-      <td>${getRolBadge(user)}</td>
-      <td>${getEstadoBadge(user.estado)}</td>
+
+/* ============================================
+   MOSTRAR USUARIOS EN TABLA
+   ============================================ */
+
+function mostrarUsuarios(usuarios) {
+  console.log('📝 Mostrando usuarios:', usuarios.length);
+  const tbody = document.getElementById('userTableBody');
+  
+  if (!tbody) {
+    console.error('❌ Elemento userTableBody no encontrado');
+    return;
+  }
+  
+  if (!usuarios || usuarios.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center text-muted py-4">
+          No hay usuarios registrados
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  tbody.innerHTML = usuarios.map(usuario => `
+    <tr>
+      <td>${usuario.id_usuarios || '-'}</td>
+      <td>${usuario.identificacion || '-'}</td>
+      <td>${usuario.nombres_y_apellidos || '-'}</td>
+      <td>${usuario.correo_electronico || '-'}</td>
       <td>
-        <button class="btn btn-sm btn-outline-primary view-btn" data-id="${user.id_usuarios}">
-          <i class="bi bi-eye"></i>
+        ${getRolBadge(usuario)}
+      </td>
+      <td>
+        <span class="badge ${usuario.estado ? 'bg-success' : 'bg-danger'}">
+          ${usuario.estado ? 'Activo' : 'Inactivo'}
+        </span>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="editarUsuario('${usuario.id_usuarios}')">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="seleccionarParaBorrar('${usuario.id_usuarios}')">
+          <i class="bi bi-trash"></i>
         </button>
       </td>
+    </tr>
+  `).join('');
+}
+
+/* ============================================
+   MOSTRAR ERROR EN TABLA
+   ============================================ */
+
+function mostrarErrorEnTabla(mensaje) {
+  const tbody = document.getElementById('userTableBody');
+  if (tbody) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center text-danger py-4">
+          <strong>Error:</strong> ${mensaje}
+        </td>
+      </tr>
     `;
-    row.querySelector('.view-btn').addEventListener('click', () => viewUser(user));
-    userTableBody.appendChild(row);
-  });
+  }
 }
 
-// Obtener badge de rol
-function getRolBadge(user) {
-  if (user.rol_usuario_superadministrador) return '<span class="badge bg-danger">Super Admin</span>';
-  if (user.rol_usuario_administrador) return '<span class="badge bg-success">Admin</span>';
-  return '<span class="badge bg-primary">Usuario</span>';
-}
+/* ============================================
+   OBTENER BADGE DE ROL
+   ============================================ */
 
-// Obtener badge de estado
-function getEstadoBadge(estado) {
-  return estado 
-    ? '<span class="badge bg-success">Activo</span>' 
-    : '<span class="badge bg-secondary">Inactivo</span>';
-}
-
-// Ver usuario (modo lectura)
-function viewUser(user) {
-  currentUserId = user.id_usuarios;
-  isEditMode = false;
-  
-  document.getElementById('userId').value = user.id_usuarios;
-  document.getElementById('identificacion').value = user.identificacion;
-  document.getElementById('nombres').value = user.nombres_y_apellidos;
-  document.getElementById('correo').value = user.correo_electronico || '';
-  document.getElementById('contrasena').value = '';
-  document.getElementById('estado').checked = user.estado;
-  
-  // Marcar rol
-  if (user.rol_usuario_superadministrador) {
-    document.getElementById('superadminUser').checked = true;
-  } else if (user.rol_usuario_administrador) {
-    document.getElementById('adminUser').checked = true;
+function getRolBadge(usuario) {
+  if (usuario.rol_usuario_superadministrador) {
+    return '<span class="badge bg-danger">SuperAdmin</span>';
+  } else if (usuario.rol_usuario_administrador) {
+    return '<span class="badge bg-warning text-dark">Admin</span>';
   } else {
-    document.getElementById('normalUser').checked = true;
+    return '<span class="badge bg-primary">Usuario</span>';
+  }
+}
+
+/* ============================================
+   ACTUALIZAR ESTADÍSTICAS
+   ============================================ */
+
+function actualizarEstadisticas(usuarios) {
+  const totalUsersEl = document.getElementById('totalUsers');
+  const activeUsersEl = document.getElementById('activeUsers');
+  const adminUsersEl = document.getElementById('adminUsers');
+  const superadminUsersEl = document.getElementById('superadminUsers');
+  
+  if (totalUsersEl) totalUsersEl.textContent = usuarios.length;
+  
+  if (activeUsersEl) {
+    const activos = usuarios.filter(u => u.estado).length;
+    activeUsersEl.textContent = activos;
   }
   
-  // Deshabilitar campos
-  setFormReadonly(true);
-  editBtn.disabled = false;
-  deleteBtn.disabled = false;
-  submitBtn.style.display = 'none';
-  cancelBtn.style.display = 'none';
+  if (adminUsersEl) {
+    const admins = usuarios.filter(u => u.rol_usuario_administrador || u.rol_usuario_superadministrador).length;
+    adminUsersEl.textContent = admins;
+  }
+  
+  if (superadminUsersEl) {
+    const superadmins = usuarios.filter(u => u.rol_usuario_superadministrador).length;
+    superadminUsersEl.textContent = superadmins;
+  }
 }
 
-// Modo edición
-editBtn.addEventListener('click', () => {
-  isEditMode = true;
-  setFormReadonly(false);
-  submitBtn.style.display = 'block';
-  cancelBtn.style.display = 'block';
-  document.getElementById('submitText').textContent = 'Actualizar';
-});
+/* ============================================
+   NUEVO USUARIO
+   ============================================ */
 
-// Nuevo usuario
-newUserBtn.addEventListener('click', () => {
-  resetForm();
-  currentUserId = null;
-  isEditMode = false;
-  setFormReadonly(false);
-  submitBtn.style.display = 'block';
-  cancelBtn.style.display = 'block';
-  document.getElementById('submitText').textContent = 'Crear Usuario';
-});
+function nuevoUsuario() {
+  console.log('➕ Nuevo usuario');
+  document.getElementById('userForm').reset();
+  document.getElementById('userId').value = '';
+  document.getElementById('roleNormal').checked = true;
+  document.getElementById('estado').checked = true;
+  document.getElementById('submitBtn').style.display = 'inline-block';
+  document.getElementById('cancelBtn').style.display = 'inline-block';
+  document.getElementById('deleteBtn').disabled = true;
+  usuarioSeleccionado = null;
+}
 
-// Cancelar
-cancelBtn.addEventListener('click', () => {
-  resetForm();
-});
+/* ============================================
+   EDITAR USUARIO
+   ============================================ */
 
-// Submit del formulario
-userForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
+async function editarUsuario(idUsuario) {
+  console.log('✏️ Editando usuario:', idUsuario);
   
-  const userData = {
+  // Primero cargar los usuarios para obtener los datos
+  try {
+    const response = await fetch('/api/usuarios');
+    const data = await response.json();
+    
+    if (!data.success) {
+      alert('Error al cargar usuario');
+      return;
+    }
+    
+    const usuario = data.usuarios.find(u => u.id_usuarios == idUsuario);
+    if (!usuario) {
+      alert('Usuario no encontrado');
+      return;
+    }
+    
+    usuarioSeleccionado = usuario;
+    
+    document.getElementById('userId').value = usuario.id_usuarios || '';
+    document.getElementById('identificacion').value = usuario.identificacion || '';
+    document.getElementById('nombres').value = usuario.nombres_y_apellidos || '';
+    document.getElementById('correo').value = usuario.correo_electronico || '';
+    document.getElementById('contrasena').value = '';
+    
+    // Seleccionar rol
+    if (usuario.rol_usuario_superadministrador) {
+      document.getElementById('roleSuperAdmin').checked = true;
+    } else if (usuario.rol_usuario_administrador) {
+      document.getElementById('roleAdmin').checked = true;
+    } else {
+      document.getElementById('roleNormal').checked = true;
+    }
+    
+    document.getElementById('estado').checked = usuario.estado || false;
+    
+    document.getElementById('submitBtn').style.display = 'inline-block';
+    document.getElementById('cancelBtn').style.display = 'inline-block';
+    document.getElementById('deleteBtn').disabled = false;
+    
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error al cargar usuario');
+  }
+}
+
+/* ============================================
+   GUARDAR USUARIO
+   ============================================ */
+
+async function guardarUsuario(e) {
+  e.preventDefault();
+  console.log('💾 Guardando usuario...');
+  
+  const isEdit = document.getElementById('userId').value !== '';
+  const url = isEdit ? '/api/usuarios/update' : '/api/usuarios/create';
+  
+  const data = {
+    id_usuarios: document.getElementById('userId').value || undefined,
     identificacion: document.getElementById('identificacion').value,
     nombres_y_apellidos: document.getElementById('nombres').value,
     correo_electronico: document.getElementById('correo').value,
-    contrasena: document.getElementById('contrasena').value,
-    estado: document.getElementById('estado').checked,
-    rol: document.querySelector('input[name="userType"]:checked').value
+    contrasena: document.getElementById('contrasena').value || undefined,
+    rol_usuario_normal: document.getElementById('roleNormal').checked,
+    rol_usuario_administrador: document.getElementById('roleAdmin').checked,
+    rol_usuario_superadministrador: document.getElementById('roleSuperAdmin').checked,
+    estado: document.getElementById('estado').checked
   };
   
+  console.log('Enviando:', url, data);
+  
   try {
-    const url = currentUserId ? `/api/usuarios/${currentUserId}` : '/api/usuarios';
-    const method = currentUserId ? 'PUT' : 'POST';
-    
     const response = await fetch(url, {
-      method,
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData)
+      body: JSON.stringify(data)
     });
     
-    if (!response.ok) throw new Error('Error al guardar usuario');
+    const resultado = await response.json();
+    console.log('Respuesta:', resultado);
     
-    showSuccess(currentUserId ? 'Usuario actualizado' : 'Usuario creado');
-    resetForm();
-    loadUsers();
+    if (resultado.success) {
+      alert('✅ ' + resultado.message);
+      cargarUsuarios();
+      cancelarEdicion();
+    } else {
+      alert('❌ Error: ' + resultado.message);
+    }
   } catch (error) {
-    showError('No se pudo guardar el usuario');
-    console.error(error);
+    console.error('Error:', error);
+    alert('❌ Error al guardar: ' + error.message);
   }
-});
+}
 
-// Eliminar usuario
-deleteBtn.addEventListener('click', () => {
-  const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-  modal.show();
-});
+/* ============================================
+   CANCELAR EDICIÓN
+   ============================================ */
 
-document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+function cancelarEdicion() {
+  console.log('❌ Cancelar');
+  document.getElementById('userForm').reset();
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('cancelBtn').style.display = 'none';
+  document.getElementById('deleteBtn').disabled = true;
+  document.getElementById('roleNormal').checked = true;
+  document.getElementById('estado').checked = true;
+  usuarioSeleccionado = null;
+}
+
+/* ============================================
+   SELECCIONAR PARA BORRAR
+   ============================================ */
+
+function seleccionarParaBorrar(idUsuario) {
+  console.log('🗑️ Seleccionar para borrar:', idUsuario);
+  
+  // Cargar datos del usuario para mostrar en modal
+  fetch('/api/usuarios')
+    .then(r => r.json())
+    .then(d => {
+      const usuario = d.usuarios.find(u => u.id_usuarios == idUsuario);
+      usuarioSeleccionado = usuario;
+      deleteModal.show();
+    });
+}
+
+/* ============================================
+   CONFIRMAR DELETE
+   ============================================ */
+
+async function confirmarDelete() {
+  if (!usuarioSeleccionado) return;
+  
+  console.log('🗑️ Confirmar eliminar:', usuarioSeleccionado.id_usuarios);
+  
   try {
-    const response = await fetch(`/api/usuarios/${currentUserId}`, {
-      method: 'DELETE'
+    const response = await fetch('/api/usuarios/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id_usuarios: usuarioSeleccionado.id_usuarios })
     });
     
-    if (!response.ok) throw new Error('Error al eliminar usuario');
+    const resultado = await response.json();
+    console.log('Respuesta delete:', resultado);
     
-    showSuccess('Usuario eliminado');
-    bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal')).hide();
-    resetForm();
-    loadUsers();
+    if (resultado.success) {
+      alert('✅ Usuario eliminado correctamente');
+      deleteModal.hide();
+      cargarUsuarios();
+      cancelarEdicion();
+    } else {
+      alert('❌ Error: ' + resultado.message);
+    }
   } catch (error) {
-    showError('No se pudo eliminar el usuario');
-    console.error(error);
+    console.error('Error:', error);
+    alert('❌ Error al eliminar: ' + error.message);
   }
-});
-
-// Actualizar
-refreshBtn.addEventListener('click', loadUsers);
-
-// Utilidades
-function resetForm() {
-  userForm.reset();
-  currentUserId = null;
-  setFormReadonly(true);
-  editBtn.disabled = true;
-  deleteBtn.disabled = true;
-  submitBtn.style.display = 'none';
-  cancelBtn.style.display = 'none';
 }
 
-function setFormReadonly(readonly) {
-  const inputs = userForm.querySelectorAll('input:not([type="hidden"])');
-  inputs.forEach(input => input.disabled = readonly);
-}
+/* ============================================
+   ABRIR CONFIRMAR DELETE
+   ============================================ */
 
-function showLoading(show) {
-  document.querySelector('.loading-spinner').style.display = show ? 'block' : 'none';
-}
-
-function showError(message) {
-  Swal.fire({ icon: 'error', title: 'Error', text: message, timer: 3000 });
-}
-
-function showSuccess(message) {
-  Swal.fire({ icon: 'success', title: 'Éxito', text: message, timer: 2000, showConfirmButton: false });
+function abrirConfirmDelete() {
+  if (!usuarioSeleccionado) {
+    alert('⚠️ Selecciona un usuario para eliminar');
+    return;
+  }
+  deleteModal.show();
 }
