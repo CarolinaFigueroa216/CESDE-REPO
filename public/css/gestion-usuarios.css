@@ -1,0 +1,303 @@
+/* ============================================ */
+/* ESTILOS PARA GESTIÓN DE USUARIOS - CESDE */
+/* ============================================ */
+
+:root {
+  --cesde-fucsia: #D81B60;
+  --cesde-fucsia-dark: #AD1457;
+  --cesde-fucsia-light: #F8BBD0;
+  --cesde-gray-dark: #2C3E50;
+  --cesde-gray-medium: #546E7A;
+  --cesde-white: #FFFFFF;
+  --cesde-success: #27ae60;
+  --cesde-warning: #f39c12;
+  --cesde-danger: #e74c3c;
+}
+
+/* Estilos generales */
+.gestion-usuarios-body {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.cesde-header-gradient {
+  background: linear-gradient(135deg, var(--cesde-gray-dark) 0%, var(--cesde-fucsia) 100%);
+  color: white;
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(216, 27, 96, 0.3);
+}
+
+/* Tarjetas y contenedores */
+.cesde-card {
+  background: var(--cesde-white);
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border: none;
+  margin-bottom: 25px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cesde-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(216, 27, 96, 0.2);
+}
+
+.cesde-card-header {
+  background: linear-gradient(135deg, var(--cesde-gray-dark), var(--cesde-fucsia-dark));
+  color: white;
+  border-radius: 15px 15px 0 0 !important;
+  padding: 20px;
+  border-bottom: none;
+}
+
+/* Botones con temática fucsia */
+.btn-cesde-primary {
+  background: linear-gradient(135deg, var(--cesde-fucsia), var(--cesde-fucsia-dark));
+  border: none;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-cesde-primary:hover {
+  background: linear-gradient(135deg, var(--cesde-fucsia-dark), var(--cesde-gray-dark));
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(216, 27, 96, 0.4);
+}
+
+.btn-cesde-outline {
+  border: 2px solid var(--cesde-fucsia);
+  color: var(--cesde-fucsia);
+  background: transparent;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-cesde-outline:hover {
+  background: var(--cesde-fucsia);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Badges y estados */
+.badge-cesde-estudiante {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.85em;
+}
+
+.badge-cesde-docente {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.85em;
+}
+
+.badge-cesde-admin {
+  background: linear-gradient(135deg, #27ae60, #229954);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.85em;
+}
+
+.badge-cesde-superadmin {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.85em;
+}
+
+/* Tablas */
+.table-cesde {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+}
+
+.table-cesde thead th {
+  background: linear-gradient(135deg, var(--cesde-gray-dark), var(--cesde-fucsia));
+  color: white;
+  border: none;
+  padding: 15px;
+  font-weight: 600;
+}
+
+.table-cesde tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+.table-cesde tbody tr:hover {
+  background-color: var(--cesde-fucsia-light);
+}
+
+/* Formularios */
+.form-cesde-control {
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+}
+
+.form-cesde-control:focus {
+  border-color: var(--cesde-fucsia);
+  box-shadow: 0 0 0 0.2rem rgba(216, 27, 96, 0.25);
+}
+
+.form-cesde-label {
+  color: var(--cesde-gray-dark);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Navegación con pestañas */
+.nav-tabs-cesde {
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+}
+
+.nav-tabs-cesde .nav-link {
+  color: var(--cesde-gray-medium);
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 25px;
+  margin: 0 5px;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs-cesde .nav-link.active {
+  background: linear-gradient(135deg, var(--cesde-fucsia), var(--cesde-fucsia-dark));
+  color: white;
+}
+
+.nav-tabs-cesde .nav-link:hover:not(.active) {
+  background: var(--cesde-fucsia-light);
+  color: var(--cesde-fucsia-dark);
+}
+
+/* Tarjetas de usuario */
+.user-card {
+  border-left: 5px solid var(--cesde-fucsia);
+  transition: all 0.3s ease;
+}
+
+.user-card:hover {
+  border-left-color: var(--cesde-fucsia-dark);
+  transform: translateX(5px);
+}
+
+.user-avatar {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--cesde-fucsia), var(--cesde-fucsia-dark));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Estadísticas */
+.stats-card {
+  text-align: center;
+  padding: 25px;
+  border-radius: 15px;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.stats-total {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.stats-activos {
+  background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.stats-inactivos {
+  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+}
+
+.stats-admins {
+  background: linear-gradient(135deg, var(--cesde-fucsia), var(--cesde-fucsia-dark));
+}
+
+.stats-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.stats-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cesde-header-gradient {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .stats-card {
+    margin-bottom: 15px;
+  }
+  
+  .nav-tabs-cesde .nav-link {
+    padding: 10px 15px;
+    margin: 0 2px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Loaders */
+.cesde-spinner {
+  border: 3px solid var(--cesde-fucsia-light);
+  border-top: 3px solid var(--cesde-fucsia);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

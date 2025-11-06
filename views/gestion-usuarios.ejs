@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios - CESDE</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="/css/gestion-usuarios.css">
+</head>
+<body class="gestion-usuarios-body">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, var(--cesde-gray-dark), var(--cesde-fucsia));">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/welcome">
+                <i class="bi bi-building me-2"></i>CESDE - Gestión de Usuarios
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <i class="bi bi-person-circle me-1"></i><%= user.nombres_y_apellidos %>
+                </span>
+                <a class="btn btn-outline-light btn-sm" href="/logout">
+                    <i class="bi bi-box-arrow-right me-1"></i>Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="cesde-header-gradient text-center fade-in">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-people-fill me-3"></i>Gestión de Usuarios
+            </h1>
+            <p class="lead mb-0">Sistema integral de administración de usuarios educativos</p>
+        </div>
+
+        <!-- Navegación -->
+        <ul class="nav nav-tabs-cesde">
+            <li class="nav-item">
+                <a class="nav-link active" href="/gestion-usuarios">
+                    <i class="bi bi-people-fill me-2"></i>Usuarios
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </a>
+            </li>
+            <% if (user.rol_usuario_administrador || user.rol_usuario_superadministrador) { %>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin">
+                    <i class="bi bi-gear-fill me-2"></i>Administración
+                </a>
+            </li>
+            <% } %>
+        </ul>
+
+        <!-- Estadísticas -->
+        <div class="row mb-4 fade-in">
+            <div class="col-md-3">
+                <div class="stats-card stats-total">
+                    <div class="stats-number" id="totalUsers">0</div>
+                    <div class="stats-label">Total Usuarios</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card stats-activos">
+                    <div class="stats-number" id="activeUsers">0</div>
+                    <div class="stats-label">Usuarios Activos</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card stats-admins">
+                    <div class="stats-number" id="adminUsers">0</div>
+                    <div class="stats-label">Administradores</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card stats-inactivos">
+                    <div class="stats-number" id="inactiveUsers">0</div>
+                    <div class="stats-label">Usuarios Inactivos</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row fade-in">
+            <!-- Lista de Usuarios -->
+            <div class="col-lg-8">
+                <div class="cesde-card">
+                    <div class="cesde-card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-list-ul me-2"></i>Lista de Usuarios
+                        </h5>
+                        <div>
+                            <button class="btn btn-cesde-outline btn-sm me-2" onclick="cargarUsuarios()">
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </button>
+                            <% if (user.rol_usuario_administrador || user.rol_usuario_superadministrador) { %>
+                            <button class="btn btn-cesde-primary btn-sm" onclick="mostrarFormularioUsuario()">
+                                <i class="bi bi-person-plus me-1"></i>Nuevo Usuario
+                            </button>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-cesde">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Identificación</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaUsuariosBody">
+                                    <!-- Los usuarios se cargarán aquí dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="cesde-spinner" id="loadingSpinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Usuario -->
+            <div class="col-lg-4">
+                <div class="cesde-card">
+                    <div class="cesde-card-header">
+                        <h5 class="mb-0" id="formTitulo">
+                            <i class="bi bi-person-gear me-2"></i>Gestión de Usuario
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="formUsuario">
+                            <input type="hidden" id="userId">
+                            
+                            <div class="mb-3">
+                                <label class="form-cesde-label">Identificación *</label>
+                                <input type="text" class="form-control form-cesde-control" id="identificacion" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-cesde-label">Nombres y Apellidos *</label>
+                                <input type="text" class="form-control form-cesde-control" id="nombres_y_apellidos" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-cesde-label">Email *</label>
+                                <input type="email" class="form-control form-cesde-control" id="correo_electronico" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-cesde-label">Contraseña <span id="passwordRequired" class="text-danger">*</span></label>
+                                <input type="password" class="form-control form-cesde-control" id="contrasena">
+                                <small class="text-muted" id="passwordHelp">Dejar en blanco para mantener la actual</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-cesde-label">Tipo de Usuario *</label>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoEstudiante" value="estudiante" checked>
+                                    <label class="form-check-label" for="tipoEstudiante">
+                                        <span class="badge-cesde-estudiante">Estudiante</span>
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoDocente" value="docente">
+                                    <label class="form-check-label" for="tipoDocente">
+                                        <span class="badge-cesde-docente">Docente</span>
+                                    </label>
+                                </div>
+                                <% if (user.rol_usuario_administrador || user.rol_usuario_superadministrador) { %>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoAdmin" value="admin">
+                                    <label class="form-check-label" for="tipoAdmin">
+                                        <span class="badge-cesde-admin">Administrador</span>
+                                    </label>
+                                </div>
+                                <% } %>
+                                <% if (user.rol_usuario_superadministrador) { %>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipoUsuario" id="tipoSuperAdmin" value="superadmin">
+                                    <label class="form-check-label" for="tipoSuperAdmin">
+                                        <span class="badge-cesde-superadmin">Super Admin</span>
+                                    </label>
+                                </div>
+                                <% } %>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="estado" checked>
+                                    <label class="form-check-label" for="estado">Usuario Activo</label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-cesde-primary" id="btnSubmit">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    <span id="btnSubmitText">Crear Usuario</span>
+                                </button>
+                                <button type="button" class="btn btn-cesde-outline" onclick="limpiarFormulario()" id="btnCancelar" style="display: none;">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Información del Usuario Actual -->
+                <div class="cesde-card mt-4">
+                    <div class="cesde-card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-person-check me-2"></i>Tu Información
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="user-avatar mx-auto mb-3">
+                            <%= user.nombres_y_apellidos.split(' ')[0].charAt(0) + (user.nombres_y_apellidos.split(' ')[1] ? user.nombres_y_apellidos.split(' ')[1].charAt(0) : '') %>
+                        </div>
+                        <h6><%= user.nombres_y_apellidos %></h6>
+                        <p class="text-muted mb-2"><%= user.correo_electronico %></p>
+                        <% if (user.rol_usuario_superadministrador) { %>
+                            <span class="badge-cesde-superadmin">Super Administrador</span>
+                        <% } else if (user.rol_usuario_administrador) { %>
+                            <span class="badge-cesde-admin">Administrador</span>
+                        <% } else if (user.rol_usuario_normal) { %>
+                            <span class="badge-cesde-estudiante">Usuario Normal</span>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/gestion-usuarios.js"></script>
+</body>
+</html>

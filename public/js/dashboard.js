@@ -367,3 +367,5 @@ function abrirConfirmDelete() {
   }
   deleteModal.show();
 }
+
+<a href="/admin/users" class="btn btn-cesde">Gestionar Usuarios</a>

@@ -1392,3 +1392,189 @@ app.listen(PORT, () => {
   console.log('   • Hasheo de contraseñas con bcrypt');
   console.log('   • Logs detallados de seguridad');
 });
+// ============================================
+// RUTA DE GESTIÓN DE USUARIOS CESDE
+// ============================================
+
+app.get('/gestusuarios', requireAuth, (req, res) => {
+    // Verificar si el usuario tiene permisos de administrador
+    if (!req.session.user.rol_usuario_administrador && !req.session.user.rol_usuario_superadministrador) {
+        return res.status(403).render('error', { 
+            error: 'No tienes permisos para acceder a esta sección',
+            user: req.session.user 
+        });
+    }
+    
+    res.render('gestusuarios', { 
+        user: req.session.user,
+        title: 'Gestión de Usuarios - CESDE'
+    });
+});
+
+// Rutas de gestión de usuarios (solo admin y superadmin)
+app.get('/admin/users', requireAuth, requireAdmin, (req, res) => {
+  res.render('admin-users', { user: req.session.user });
+});
+
+// API para obtener usuarios (solo admin y superadmin)
+app.get('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { data: users, error } = await supabase
+      .from('usuarios')
+      .select('*')
+      .order('id_usuarios', { ascending: true });
+
+    if (error) throw error;
+
+    // No devolver las contraseñas
+    users.forEach(user => delete user.contrasena);
+
+    res.json(users);
+  } catch (err) {
+    console.error('Error obteniendo usuarios:', err);
+    res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
+});
+
+// API para crear un usuario (solo admin y superadmin)
+app.post('/api/admin/users', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { identificacion, nombres_y_apellidos, correo_electronico, contrasena, estado, rol } = req.body;
+
+    // Validar campos obligatorios
+    if (!identificacion || !nombres_y_apellidos || !correo_electronico || !contrasena) {
+      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    }
+
+    // Verificar si ya existe la identificación
+    const { data: existing } = await supabase
+      .from('usuarios')
+      .select('identificacion')
+      .eq('identificacion', identificacion);
+
+    if (existing && existing.length > 0) {
+      return res.status(400).json({ error: 'Ya existe un usuario con esta identificación' });
+    }
+
+    // Verificar si ya existe el correo
+    const { data: existingEmail } = await supabase
+      .from('usuarios')
+      .select('correo_electronico')
+      .eq('correo_electronico', correo_electronico);
+
+    if (existingEmail && existingEmail.length > 0) {
+      return res.status(400).json({ error: 'Ya existe un usuario con este correo' });
+    }
+
+    // Hashear la contraseña
+    const hashedPassword = await bcrypt.hash(contrasena, 10);
+
+    // Preparar roles
+    let rolData = {
+      rol_usuario_normal: rol === 'normal',
+      rol_usuario_administrador: rol === 'admin',
+      rol_usuario_superadministrador: rol === 'superadmin'
+    };
+
+    // Insertar el usuario
+    const { data, error } = await supabase.from('usuarios').insert([{
+      identificacion,
+      nombres_y_apellidos,
+      correo_electronico,
+      contrasena: hashedPassword,
+      estado: estado !== undefined ? estado : true,
+      ...rolData
+    }]).select();
+
+    if (error) throw error;
+
+    console.log(`✅ Usuario creado por ${req.session.user.nombres_y_apellidos}: ${nombres_y_apellidos}`);
+
+    // No devolver la contraseña
+    delete data[0].contrasena;
+
+    res.json(data[0]);
+  } catch (err) {
+    console.error('Error creando usuario:', err);
+    res.status(500).json({ error: 'Error al crear usuario' });
+  }
+});
+
+// API para actualizar un usuario (solo admin y superadmin)
+app.put('/api/admin/users/:id', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { identificacion, nombres_y_apellidos, correo_electronico, contrasena, estado, rol } = req.body;
+
+    // Preparar objeto de actualización
+    let updateData = {
+      identificacion,
+      nombres_y_apellidos,
+      correo_electronico,
+      estado: estado !== undefined ? estado : true,
+      rol_usuario_normal: rol === 'normal',
+      rol_usuario_administrador: rol === 'admin',
+      rol_usuario_superadministrador: rol === 'superadmin'
+    };
+
+    // Solo actualizar contraseña si se proporcionó una nueva
+    if (contrasena && contrasena.trim() !== '') {
+      updateData.contrasena = await bcrypt.hash(contrasena, 10);
+    }
+
+    // Actualizar el registro en la BD
+    const { data, error } = await supabase
+      .from('usuarios')
+      .update(updateData)
+      .eq('id_usuarios', id)
+      .select();
+
+    if (error) throw error;
+
+    console.log(`✅ Usuario actualizado por ${req.session.user.nombres_y_apellidos}: ID ${id}`);
+
+    // No devolver la contraseña
+    delete data[0].contrasena;
+
+    res.json(data[0]);
+  } catch (err) {
+    console.error('Error actualizando usuario:', err);
+    res.status(500).json({ error: 'Error al actualizar usuario' });
+  }
+});
+
+// API para eliminar un usuario (solo superadmin)
+app.delete('/api/admin/users/:id', requireAuth, requireSuperAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Prevenir que un usuario se elimine a sí mismo
+    if (parseInt(id) === req.session.user.id_usuarios) {
+      return res.status(400).json({ error: 'No puedes eliminar tu propio usuario' });
+    }
+
+    // Eliminar el usuario de la BD
+    const { error } = await supabase.from('usuarios').delete().eq('id_usuarios', id);
+
+    if (error) throw error;
+
+    console.log(`⚠️ Usuario eliminado por ${req.session.user.nombres_y_apellidos}: ID ${id}`);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error eliminando usuario:', err);
+    res.status(500).json({ error: 'Error al eliminar usuario' });
+  }
+});
+// ============================================
+// RUTAS DE GESTIÓN DE USUARIOS
+// ============================================
+
+// GET /gestion-usuarios - Vista de gestión de usuarios
+app.get('/gestion-usuarios', requireAuth, (req, res) => {
+    res.render('gestion-usuarios', { 
+        user: req.session.user,
+        title: 'Gestión de Usuarios - CESDE'
+    });
+});
+
