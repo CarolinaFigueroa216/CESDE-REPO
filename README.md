@@ -21,6 +21,8 @@ Incluye características modernas como **reCAPTCHA v2**, **autenticación en dos
 | Juan David Botero Diaz | `DavidB08` |
 | nilson leonardo gonzalez sandoval | `Leito1122333` |
 | Santiago Sanchez Fernandez | `Italianos1622` |
+| Erika forero ballesteros | `akireorerof` |
+| Valeria Pardo Trujillo | `naturalezaactual` |
 
 Proyecto desarrollado como práctica académica de desarrollo web con **Node.js** y **EJS**.
 
