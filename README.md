@@ -14,24 +14,24 @@ reCAPTCHA v2. - 🧠 Conexión con base de datos Supabase (PostgreSQL).
 ------------------------------------------------------------------------
 
 👨‍💻 Autores
-
-  Nombre completo                     Usuario
   ----------------------------------- ----------------------
-  Karen Tatiana Mendez Bojaca         Karen11m
-  Jhon Alejandro Díaz Jiménez         aledelling
-  David Esteban Legro Muñoz           Legro28
-  Juan Camilo Sepúlveda Vesga         Poseidon221
-  Jhoan Sebastián Méndez Rojas        Volcan1124
-  Manuel Alejandro Bello Cardozo      empleadodekfc
-  Danna Shirley Lozano Martínez       Danna04-shir
-  Astrid Carolina Figueroa            Carolina Figueroa216
-  Vanesa Alejandra Justinico Puerto   AlejandraPuerto
-  Andrés Sana Peña                    AndresSana
-  Juan David Botero Díaz              DavidB08
-  Nilson Leonardo González Sandoval   Leito1122333
-  Santiago Sánchez Fernández          Italianos1622
-  Erika Forero Ballesteros            akireorerof
-  Valeria Pardo Trujillo              naturalezaactual
+| Nombre completo | Usuario |
+|------------------|----------|
+| Karen Tatiana Mendez Bojaca | `Karen11m` |
+| Jhon Alejandro Díaz Jiménez | `aledelling` |
+| David Esteban Legro Muñoz | `Legro28` |
+| Juan Camilo Sepúlveda Vesga | `Poseidon221` |
+| Jhoan Sebastián Méndez Rojas | `Volcan1124` |
+| Manuel Alejandro Bello Cardozo | `empleadodekfc` |
+| Danna Shirley Lozano Martínez | `Danna04-shir` |
+| Astrid Carolina Figueroa | `Carolina Figueroa216` |
+| Vanesa alejandra justinico puerto | `AlejandraPuerto` |
+| Andres Sana Peña  | `AndresSana` |
+| Juan David Botero Diaz | `DavidB08` |
+| nilson leonardo gonzalez sandoval | `Leito1122333` |
+| Santiago Sanchez Fernandez | `Italianos1622` |
+| Erika forero ballesteros | `akireorerof` |
+| Valeria Pardo Trujillo | `naturalezaactual` |
 
 Proyecto desarrollado como práctica académica del módulo de Desarrollo
 Web con Node.js y EJS en CESDE.
