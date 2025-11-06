@@ -1,26 +1,40 @@
-# MetaDatos
-Alejandro Arango y Sebastian Hernandez
-Test
+# 🧠 Repositorio CESDE Node.js, EJS y Supabase
 
-{
-  "metadatos": {
-    "titulo": "Título del Proyecto Académico",
-    "autor": "Nombre del Autor o Autores",
-    "programa_cesde": "Nombre del Programa CESDE",
-    "palabras_clave": [
-      "Palabra clave 1",
-      "Palabra clave 2",
-      "Palabra clave 3"
-    ],
-    "resumen": "Este es un resumen breve del proyecto académico, describiendo sus objetivos, metodología y resultados esperados o alcanzados.",
-    "fecha_creacion": "YYYY-MM-DD",
-    "lenguajes_utilizados": [
-      "JavaScript",
-      "HTML",
-      "CSS",
-      "Kotlin"
-    ],
-    "enlace_repositorio": "URL del repositorio o enlace relevante al proyecto"
-  }
-}
+Este proyecto implementa un **sistema de autenticación y gestión de acceso** desarrollado con **Node.js**, **Express**, **EJS** y **Supabase**.  
+Incluye características modernas como **reCAPTCHA v2**, **autenticación en dos pasos (2FA)**, **hashing de contraseñas** y **protección contra ataques de fuerza bruta**.
+
+---
+
+## 👨‍💻 Autores
+
+| Nombre completo | Usuario |
+|------------------|----------|
+| David Esteban Legro Muñoz | `Legro28` |
+| Juan Camilo Sepúlveda Vesga | `Poseidon221` |
+| Jhoan Sebastián Méndez Rojas | `Volcan1124` |
+| Manuel Alejandro Bello Cardozo | `empleadodekfc` |
+
+Proyecto desarrollado como práctica académica de desarrollo web con **Node.js** y **EJS**.
+
+---
+
+## 🚀 Tecnologías utilizadas
+
+- **Node.js** – entorno de ejecución de JavaScript.  
+- **Express.js** – framework para construir el servidor web.  
+- **EJS** – motor de plantillas para vistas dinámicas.  
+- **Supabase** – base de datos PostgreSQL y autenticación externa.  
+- **bcryptjs** – hashing seguro de contraseñas.  
+- **axios** – consumo de APIs externas (Google reCAPTCHA).  
+- **express-session** – manejo de sesiones de usuario.  
+- **dotenv** – configuración mediante variables de entorno.
+
+---
+
+## ⚙️ Instalación y configuración
+
+1. **Clonar el repositorio**
+   ```bash
+   git clone https://github.com/tu-usuario/nombre-del-repo.git
+
 
