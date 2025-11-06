@@ -9,6 +9,7 @@ Incluye características modernas como **reCAPTCHA v2**, **autenticación en dos
 
 | Nombre completo | Usuario |
 |------------------|----------|
+| Karen Tatiana Mendez Bojaca | `Karen11m` |
 | Jhon Alejandro Díaz Jiménez | `aledelling` |
 | David Esteban Legro Muñoz | `Legro28` |
 | Juan Camilo Sepúlveda Vesga | `Poseidon221` |
