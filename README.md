@@ -9,12 +9,18 @@ Incluye características modernas como **reCAPTCHA v2**, **autenticación en dos
 
 | Nombre completo | Usuario |
 |------------------|----------|
-| Karen Tatiana Mendez Bojaca | `Karen11m` |
-| Jhon Alejandro Diaz Jimenez | `Aledelling` |
+| Jhon Alejandro Díaz Jiménez | `aledelling` |
 | David Esteban Legro Muñoz | `Legro28` |
 | Juan Camilo Sepúlveda Vesga | `Poseidon221` |
 | Jhoan Sebastián Méndez Rojas | `Volcan1124` |
 | Manuel Alejandro Bello Cardozo | `empleadodekfc` |
+| Danna Shirley Lozano Martínez | `Danna04-shir` |
+| Astrid Carolina Figueroa | `Carolina Figueroa216` |
+| Vanesa alejandra justinico puerto | `AlejandraPuerto` |
+| Andres Sana Peña  | `AndresSana` |
+| Juan David Botero Diaz | `DavidB08` |
+| nilson leonardo gonzalez sandoval | `Leito1122333` |
+| Santiago Sanchez Fernandez | `Italianos1622` |
 
 Proyecto desarrollado como práctica académica de desarrollo web con **Node.js** y **EJS**.
 
